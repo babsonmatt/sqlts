@@ -1,0 +1,16 @@
+{
+  "commit": "c8a03f97b870ddea6bb973485bacf4737c82f502",
+  "version": "0.5.0-sqlts.c8a03f9",
+  "upstream": "https://github.com/colinhacks/reylo",
+  "packages": {
+    "reylo": {
+      "file": "reylo-0.5.0-sqlts.c8a03f9.tgz",
+      "sha256": "89798a95539937aa22af42612d505255ca164bce3cf60b1e56fea62605381e74"
+    },
+    "@reylosql/postgres": {
+      "file": "reylosql-postgres-0.5.0-sqlts.c8a03f9.tgz",
+      "sha256": "a2a63112b0e7fb7b4a64c9d19de762e9e26031dbc9c82ed15637ca016ac7e2ae"
+    }
+  },
+  "engineSha256": "23de6ff591d59642e9792bb362bbd800f97d57d46db88d1673c0c4d7b6c7260a"
+}

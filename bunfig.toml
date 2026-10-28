@@ -1,0 +1,4 @@
+# Independent project: no SQL-import preload.
+
+[install]
+linker = "hoisted"

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "contentMappers": [
+    {
+      "package": "reylo-sqlts-experiment",
+      "extensions": [".sqlts"]
+    }
+  ],
+  "include": ["*.ts", "*.sqlts"]
+}

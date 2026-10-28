@@ -1,0 +1,35 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Orders are illustrative, inline data; users are real demo-table rows.
+// Keep the optional status restriction in ON so users with no paid orders survive.
+// PostgreSQL count(int)/sum(int) and dense_rank() return bigint here.
+export function spending(orgId: number, onlyPaid = true, minCents?: bigint) {
+  return sql`
+    WITH orders(id, user_id, total_cents, status) AS (
+      VALUES
+        (101, 1, 12500, 'paid'::text),
+        (102, 1, 7500, 'paid'::text),
+        (103, 1, 5000, 'refunded'::text),
+        (104, 2, 3000, 'pending'::text),
+        (105, 3, 9900, 'paid'::text),
+        (106, 4, 99000, 'paid'::text)
+    ), totals AS (
+      SELECT u.id, u.name,
+        count(o.id) AS order_count,
+        coalesce(sum(o.total_cents), 0::bigint) AS total_cents,
+        max(o.total_cents) AS largest_order_cents
+      FROM reylo_inline_demo.users u
+      LEFT JOIN orders o ON o.user_id = u.id
+        ${onlyPaid ? sql`AND o.status = 'paid'` : sql.empty}
+      WHERE u.org_id = ${orgId}
+      GROUP BY u.id, u.name
+      ${minCents != null
+        ? sql`HAVING coalesce(sum(o.total_cents), 0::bigint) >= ${minCents}`
+        : sql.empty}
+    )
+    SELECT id, name, order_count, total_cents, largest_order_cents,
+      dense_rank() OVER (ORDER BY total_cents DESC) AS spending_rank
+    FROM totals
+    ORDER BY total_cents DESC, id
+  `;
+}

@@ -1,0 +1,30 @@
+import { sql } from "reylo-sqlts-experiment";
+import { inOrganization } from "./fragments.sqlts";
+import { requireEmail, contactProjection } from "./reusable-fragments.sqlts";
+
+// An arrow query using an imported conditional fragment.
+export const findContacts = (orgId: number, emailOnly = false) => sql`
+  SELECT u.id, u.name, u.email
+  FROM reylo_inline_demo.users u
+  ${sql.where(inOrganization(orgId), requireEmail(emailOnly))}
+  ORDER BY u.id
+`;
+
+// Local variables and simple forwarding wrappers preserve the relationship.
+export function listContacts(orgId: number, emailOnly = false) {
+  const query = findContacts(orgId, emailOnly);
+  return query;
+}
+
+export const contactsWithEmail = (orgId: number) => listContacts(orgId, true);
+
+// Literal choices can select different fields, not just different nullability.
+export function selectContactField(orgId: number, field: "id" | "email" = "id") {
+  const query = sql`
+    SELECT ${contactProjection(field)}
+    FROM reylo_inline_demo.users u
+    ${sql.where(inOrganization(orgId))}
+    ORDER BY u.id
+  `;
+  return query;
+}

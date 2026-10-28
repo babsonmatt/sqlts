@@ -1,0 +1,40 @@
+{
+  "file_types": {
+    "TypeScript": ["sqlts"]
+  },
+  "languages": {
+    "TypeScript": {
+      "language_servers": [
+        "reylo-inline-preview",
+        "typescript-ls",
+        "!reylo-compose-preview",
+        "!vtsls",
+        "!typescript-language-server"
+      ],
+      "semantic_tokens": "combined"
+    }
+  },
+  "lsp": {
+    "typescript-ls": {
+      "binary": {
+        "path": "/Users/matt/src/sandbox/reylo-inline-sql/node_modules/typescript/bin/tsc",
+        "arguments": ["--lsp", "--stdio"]
+      },
+      "initialization_options": {
+        "runExternalCode": true
+      }
+    },
+    "reylo-inline-preview": {
+      "binary": {
+        "path": "bun",
+        "arguments": [
+          "--no-env-file",
+          "--config=/Users/matt/src/sandbox/reylo-inline-sql/editors/zed/server.bunfig.toml",
+          "/Users/matt/src/sandbox/reylo-inline-sql/scripts/preview-server.ts",
+          "--project",
+          "/Users/matt/src/sandbox/reylo-inline-sql"
+        ]
+      }
+    }
+  }
+}

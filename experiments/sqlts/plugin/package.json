@@ -1,0 +1,25 @@
+{
+  "name": "reylo-sqlts-experiment",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./tag.ts",
+    "./register": "./register.ts",
+    "./build": "./build.ts",
+    "./runtime": "./runtime.ts",
+    "./tracing": "./tracing.ts",
+    "./vite": "./vite.ts",
+    "./esbuild": "./esbuild.ts"
+  },
+  "typescript": {
+    "contentMapper": {
+      "compilerOptions": [],
+      "dynamicConfig": true,
+      "exec": [
+        "node",
+        "mapper.ts"
+      ]
+    }
+  }
+}

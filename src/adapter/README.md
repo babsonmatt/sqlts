@@ -1,0 +1,1 @@
+Adapter copied from ../bun reylo sql/packages/compose/src/{reylo,lex,bind}.ts. The bind parameter interface is local. There is no live dependency on that project. Reylo and @reylosql/postgres are pinned to 0.5.0; private tooling/cache formats require review before upgrading.

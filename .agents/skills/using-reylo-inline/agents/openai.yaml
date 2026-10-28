@@ -1,0 +1,3 @@
+interface:
+  display_name: "Reylo Inline SQL"
+  short_description: "Compose and check typed inline PostgreSQL queries"

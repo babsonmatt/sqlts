@@ -1,0 +1,30 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Correlated LEFT JOIN LATERAL: find the next user within the same organization.
+// Filtering INSIDE the lateral query changes which peer is chosen.
+// Requiring a match OUTSIDE removes users who have no qualifying peer.
+export function nextPeers(orgId: number, onlyContactable = false, requireMatch = false) {
+  return sql`
+    SELECT u.id, u.name,
+      next_user.id AS next_id,
+      next_user.name AS next_name,
+      next_user.email AS next_email
+    FROM reylo_inline_demo.users u
+    LEFT JOIN LATERAL (
+      SELECT peer.id, peer.name, peer.email
+      FROM reylo_inline_demo.users peer
+      ${sql.where(
+        sql`peer.org_id = u.org_id`,
+        sql`peer.id > u.id`,
+        onlyContactable && sql`peer.email IS NOT NULL`,
+      )}
+      ORDER BY peer.id
+      LIMIT 1
+    ) next_user ON true
+    ${sql.where(
+      sql`u.org_id = ${orgId}`,
+      requireMatch && sql`next_user.id IS NOT NULL`,
+    )}
+    ORDER BY u.id
+  `;
+}

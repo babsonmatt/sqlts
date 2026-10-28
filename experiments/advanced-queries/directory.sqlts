@@ -1,0 +1,32 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Materialized CTE, aggregate FILTER, optional HAVING, INNER JOIN, window function.
+// minMembers applies to the searched subset, not the whole organization.
+export function directory(orgId: number, search?: string, minMembers?: number) {
+  return sql`
+    WITH selected_users AS MATERIALIZED (
+      SELECT u.id, u.org_id, u.name, u.email
+      FROM reylo_inline_demo.users u
+      ${sql.where(
+        sql`u.org_id = ${orgId}`,
+        search && sql.or(
+          sql`u.name ILIKE ${`%${search}%`}`,
+          sql`u.email ILIKE ${`%${search}%`}`,
+        ),
+      )}
+    ), summary AS (
+      SELECT org_id,
+        count(*) AS member_count,
+        count(*) FILTER (WHERE email IS NOT NULL) AS contactable_count
+      FROM selected_users
+      GROUP BY org_id
+      ${minMembers != null ? sql`HAVING count(*) >= ${minMembers}::int` : sql.empty}
+    )
+    SELECT u.id, u.name, u.email,
+      s.member_count, s.contactable_count,
+      row_number() OVER (ORDER BY u.name, u.id) AS position
+    FROM selected_users u
+    INNER JOIN summary s ON s.org_id = u.org_id
+    ORDER BY u.name, u.id
+  `;
+}

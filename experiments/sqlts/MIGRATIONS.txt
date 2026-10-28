@@ -1,0 +1,103 @@
+Implementation update (2026-10-26)
+The isolated dbmate 2.37.0 demo and generic refresh-schema bridge are now implemented.
+See experiments/dbmate/README.md. Verification covers nullable addition, actual Node/Bun
+execution, live completion/diagnostics/types, type change, rollback, concurrent locking,
+no-op reapplication and transactional failure. Only randomly named disposable local
+databases are used. Existing demo schema/seed data is unchanged. Checksum enforcement,
+nontransactional recovery and production rollout testing remain outside this slice.
+The original design investigation follows for context; its not-yet-implemented status
+statements describe the investigation date, not the implementation above.
+
+Migration investigation for SQLTS
+Status: design proposal; no migration runner installed and no migrations applied.
+
+Use authored SQL migrations to evolve the database, and keep SQLTS responsible for
+checking queries against that database. This preserves the project's SQL-first API
+and avoids a second, handwritten TypeScript schema or a query-generation step.
+
+  authored migration SQL -> development/CI database -> SQL-aware query check
+                         -> refreshed editor catalog and inferred query types
+
+The first experiment should integrate an existing SQL migration runner rather than
+implement a migration engine inside the query library. Dbmate is the leading candidate
+for a small optional adapter. Its SQL files contain up/down sections, it records
+applied versions, supports transactions with an explicit opt-out, and can disable
+schema dumps. Its current documentation also exposes a PostgreSQL migration lock.
+Pin and test a concrete release before relying on those options. Nothing would be
+added to the production query runtime. Source: https://github.com/amacneil/dbmate
+
+One relevant limitation: dbmate records versions rather than migration contents.
+An integration must not claim that this alone detects edits to already-applied files.
+Use append-only migration history and explicitly test the desired checksum/drift
+policy before describing that guarantee. Source:
+https://github.com/amacneil/dbmate/blob/main/README.md
+
+Sqitch is an alternative if explicit deploy/revert/verify scripts and a dependency
+plan are more important than a minimal timestamp-ordered workflow. That is a larger
+workflow choice; it is not necessary to get query inference working with migrations.
+Source: https://sqitch.org/docs/manual/sqitchtutorial/
+
+What belongs in SQLTS
+
+1. A documented optional migration-runner adapter with explicit database selection.
+   Preserve existing projects' migration tools; adopting SQLTS should not require
+   migrating their migration history. The runner owns ordering, locks, transactions,
+   migration history and failure recovery.
+2. A post-success schema-refresh bridge. Refresh catalog suggestions and invalidate
+   schema-derived query analysis together, then run a fresh SQL-aware check. Saving
+   a migration file does not mean that its DDL has been applied. The current editor
+   refreshes the catalog on SQL-file saves, while the helper watcher tracks source
+   dependencies; neither is a completed migration integration.
+3. A CI recipe that provisions a disposable database, applies the migration history,
+   checks all relevant SQLTS projects, and runs query tests. Report migration failure
+   separately from SQL/type failure. Do not apply pending DDL inside a normal type
+   check or while hovering in the editor.
+4. Target-aware commands and diagnostics. A migration connection may have different
+   permissions from the application's query connection. The selected database and
+   effective Reylo direct_url configuration must agree for post-migration checking;
+   an environment-variable override alone is not sufficient if configuration chooses
+   a different connection. Never print connection credentials in status output.
+
+First isolated implementation slice
+
+Create a separate migration demo and disposable database, with an explicit connection
+variable. Start with a users table and a typed query, then add a nullable display_name
+column in a second SQL migration. Verify that the new column is rejected before the
+migration, accepted afterward, and typed as nullable without hand-authored row types.
+Test fresh checks and a running editor session, including the new schema-refresh bridge.
+Keep data seeds separate from schema history. The current db/schema.sql also upserts
+four demo users; it is a setup/seed script, not a migration ledger. Do not silently
+baseline that already-existing database as if its history had been applied.
+
+Then test:
+- Re-running an applied history is a no-op, and duplicate/out-of-order versions follow
+  the chosen documented policy.
+- A transactional migration failure does not leave partial schema or an applied record.
+- Two concurrent migration processes cannot independently apply the same change.
+- Changes to applied files are detected if checksum enforcement is part of the adapter.
+- A removed/renamed column breaks the appropriate queries and callers after refresh.
+- A staged additive change allows the prior and next application versions to coexist;
+  destructive cleanup is a separate, deliberate step.
+- Nontransactional migrations have an explicit recovery path and are not reported as
+  atomic. PostgreSQL CREATE INDEX CONCURRENTLY cannot run inside a transaction block
+  and a failed concurrent build can leave an invalid index. Source:
+  https://www.postgresql.org/docs/current/sql-createindex.html
+
+Column changes can require strong table locks, and PostgreSQL offers mechanisms such
+as NOT VALID followed by VALIDATE CONSTRAINT for some constraint changes. The runner
+must preserve authored PostgreSQL SQL and transaction choices rather than pretending
+all DDL can be validated or applied with one generic wrapper. Source:
+https://www.postgresql.org/docs/current/sql-altertable.html
+
+What this does not promise
+
+No automatic schema diff inferred from query text, no replacement ORM schema, no
+implicit migration on startup, and no claim that a type check proves a migration is
+safe or fast on production data. Query checking verifies queries against the selected
+post-migration schema; data backfills, deployment compatibility and operational behavior
+need their own tests. A generated schema dump can be optional documentation, not a
+required source of SQLTS types.
+
+Next concrete task: build the disposable-db migration demo, select and pin a runner,
+and implement/test the post-success editor/type-refresh bridge. That work is not yet
+implemented by this investigation.

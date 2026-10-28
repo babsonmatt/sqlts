@@ -1,0 +1,12 @@
+node_modules/
+.env
+.reylo/
+dist/
+work/
+editors/zed/target/
+editors/zed/extension.wasm
+experiments/auto/.auto/
+
+.sqlts-schema-revision
+.sqlts-schema-revision.*.tmp
+.DS_Store

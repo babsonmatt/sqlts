@@ -1,0 +1,29 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Empty search omits the search filter; % and _ retain ILIKE wildcard semantics.
+export function findUsers(
+  orgId: number,
+  pageSize: number,
+  search?: string,
+  onlyWithEmail = false,
+) {
+  return sql`
+    SELECT u.id, u.name, u.email
+    FROM reylo_inline_demo.users u
+    ${sql.where(
+      sql`u.org_id = ${orgId}`,
+      search &&
+        sql.or(
+          sql`u.name ILIKE ${`%${search}%`}`,
+          sql`u.email ILIKE ${`%${search}%`}`,
+        ),
+      onlyWithEmail && sql`u.email IS NOT NULL`,
+    )}
+    ORDER BY u.id ASC
+    LIMIT ${pageSize}
+  `;
+}
+
+export function test(orgId: number) {
+  return sql`SELECT id from reylo_inline_demo.users u WHERE org_id = ${orgId}`;
+}

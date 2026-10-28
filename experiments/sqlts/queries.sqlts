@@ -1,0 +1,46 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Each query keeps its own inferred result, even with identical input types.
+export function userIds(orgId: number) {
+  return sql`
+    SELECT u.id FROM reylo_inline_demo.users u
+    WHERE u.org_id = ${orgId}
+    ORDER BY u.id
+  `;
+}
+
+export function userNames(orgId: number) {
+  return sql`
+    SELECT u.name, u.email FROM reylo_inline_demo.users u
+    WHERE u.org_id = ${orgId}
+    ORDER BY u.id
+  `;
+}
+
+export function searchUsers(orgId: number, search?: string) {
+  return sql`
+    SELECT u.id, u.name FROM reylo_inline_demo.users u
+    ${sql.where(
+      sql.fragment`u.org_id = ${orgId}`,
+      search ? sql.fragment`u.name ILIKE ${`%${search}%`}` : undefined,
+    )}
+    ORDER BY u.id
+  `;
+}
+
+// Additive shorthand: searchUsers above still demonstrates the original ternary.
+// Hover sql to see all branches; an empty search omits the entire OR group.
+export function searchUsersShorthand(orgId: number, search?: string, onlyWithEmail = false) {
+  return sql`
+    SELECT u.id, u.name FROM reylo_inline_demo.users u
+    ${sql.where(
+      sql.fragment`u.org_id = ${orgId}`,
+      search && sql.or(
+        sql.fragment`u.name ILIKE ${`%${search}%`}`,
+        sql.fragment`u.email ILIKE ${`%${search}%`}`,
+      ),
+      onlyWithEmail && sql.fragment`u.email IS NOT NULL`,
+    )}
+    ORDER BY u.id
+  `;
+}

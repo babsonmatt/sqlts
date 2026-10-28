@@ -1,0 +1,6 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Invalid before migration 2; inferred as string | null afterward.
+export function users() {
+  return sql`SELECT u.id, u.name, u.display_name FROM public.users u ORDER BY u.id`;
+}

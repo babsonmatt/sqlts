@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [
+    "experiments/auto/**",
+    "experiments/sqlts/**",
+    "experiments/shared-queries/**",
+    "experiments/advanced-queries/**",
+    "experiments/user-search/**",
+    "experiments/dbmate/**"
+  ]
+}

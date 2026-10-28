@@ -1,0 +1,10 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// This condition lives in another file. Its argument still controls caller types.
+export function requireEmail(enabled = true) {
+  return sql.fragment`${enabled ? sql.fragment`u.email IS NOT NULL` : sql.empty}`;
+}
+
+export function contactProjection(field: "id" | "email" = "id") {
+  return sql.fragment`${field === "id" ? sql.fragment`u.id` : sql.fragment`u.email`}`;
+}

@@ -1,0 +1,25 @@
+import { sql } from "reylo-sqlts-experiment";
+import { inOrganization, matchesSearch, hasEmail } from "./fragments.sqlts";
+
+export function searchUsers(orgId: number, search?: string, onlyWithEmail = false, pageSize = 20) {
+  return sql`
+    SELECT u.id, u.name, u.email
+    FROM reylo_inline_demo.users u
+    ${sql.where(
+      inOrganization(orgId),
+      search && matchesSearch(search),
+      onlyWithEmail && hasEmail,
+    )}
+    ORDER BY u.id
+    LIMIT ${pageSize}
+  `;
+}
+
+// The same fragment is validated in a second query with a different projection.
+export function countUsers(orgId: number, search?: string) {
+  return sql`
+    SELECT count(*) AS total
+    FROM reylo_inline_demo.users u
+    ${sql.where(inOrganization(orgId), search && matchesSearch(search))}
+  `;
+}

@@ -1,0 +1,30 @@
+import { sql } from "reylo-sqlts-experiment";
+
+// Illustrative manager links: Alice -> Bob -> Carol. No hierarchy table is needed.
+// The scoped CTE keeps both anchor and recursive steps inside the organization.
+export function hierarchy(orgId: number, rootId: number, maxDepth = 5) {
+  return sql`
+    WITH RECURSIVE
+    links(user_id, manager_id) AS (
+      VALUES (1, NULL::int), (2, 1), (3, 2), (4, NULL::int)
+    ), scoped_users AS MATERIALIZED (
+      SELECT id, name FROM reylo_inline_demo.users WHERE org_id = ${orgId}
+    ), walk AS (
+      SELECT u.id, u.name, 0::int AS depth, ARRAY[u.id] AS path
+      FROM scoped_users u
+      WHERE u.id = ${rootId}::int
+
+      UNION ALL
+
+      SELECT child.id, child.name, parent.depth + 1, parent.path || child.id
+      FROM walk parent
+      INNER JOIN links edge ON edge.manager_id = parent.id
+      INNER JOIN scoped_users child ON child.id = edge.user_id
+      WHERE parent.depth < ${maxDepth}::int
+        AND NOT (child.id = ANY(parent.path))
+    )
+    SELECT id, name, depth, path
+    FROM walk
+    ORDER BY path
+  `;
+}
