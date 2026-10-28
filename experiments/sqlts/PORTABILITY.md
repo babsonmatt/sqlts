@@ -39,6 +39,18 @@ content mapper; TypeScript accepts that flag only on the command line, not in ts
 `npx sqlts check -p tsconfig.json` is an optional shortcut that adds `--noEmit` and
 `--runExternalCode` for you.
 
+[tsrs](https://github.com/oxc-project/tsrs), Oxc's Rust port of the TypeScript 7 compiler,
+also runs the check. `tsrs@0.20.1-ts7.1.0-beta` gave the same results as `tsc`, SQL errors
+included:
+
+```
+bun add -d tsrs@0.20.1-ts7.1.0-beta
+bunx tsrs --noEmit --runExternalCode -p .
+```
+
+Its language server does not run content mappers yet, so keep `typescript@7.1.0-beta`
+installed for the editor. `tsc` remains the default.
+
 Checking and loader-based execution analyze SQL against the development database.
 Analysis runs at module loading, not for every request. No generated source directory is
 required. Runtime parameter checking, row decoding and Reylo's periodic schema-freshness
