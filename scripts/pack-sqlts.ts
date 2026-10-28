@@ -88,6 +88,8 @@ await writeFile(
         "Write PostgreSQL in TypeScript and keep inferred types, with SQL-aware checking.",
       keywords: ["sql", "postgres", "postgresql", "typescript", "types", "query", "reylo"],
       homepage: "https://sqlts.dev",
+      repository: { type: "git", url: "git+https://github.com/babsonmatt/sqlts.git" },
+      bugs: { url: "https://github.com/babsonmatt/sqlts/issues" },
       license: "MIT",
       publishConfig: { access: "public" },
       type: "module",
