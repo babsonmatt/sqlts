@@ -77,12 +77,16 @@ pipeline instead of discarding its lint/tests.
 ## Optional production build
 
 Keep the loader workflow for development. For deployment, first run the SQL-aware checker,
-then build with Bun using a database containing the intended schema:
+then build using a database containing the intended schema:
 
 ```
-bun node_modules/@sqlts/core/src/sqlts/cli.js build app.ts dist/app.mjs
+npx sqlts build app.ts dist/app.mjs   # Node: bundles with esbuild (npm i -D esbuild)
+bunx --bun sqlts build app.ts dist/app.mjs  # Bun: bundles with Bun.build
 node dist/app.mjs
 ```
+
+Both produce the same kind of module. Projects with their own esbuild or Vite build can use
+`@sqlts/core/esbuild` or `@sqlts/core/vite` instead (below).
 
 In this source checkout the equivalent build command is:
 
@@ -108,46 +112,58 @@ Bundle startup/compile is also checked with an unreachable development DATABASE_
 
 ## Editor setup
 
-The package includes `reylo-inline-preview` as a Node launcher for Bun, its catalog and diagnostic workers, and the isolated Bun configuration used by those workers. Configure it with
-`--project /absolute/path/to/the/application` for SQL colors/catalog completion. Use the
-application's installed native TypeScript server with `initialization_options.runExternalCode`
-for SQL checking and inferred types, and associate `sqlts` with TypeScript.
+Types and SQL errors in the editor come from TypeScript 7's own language server with the
+content mapper enabled; no extension is needed for those. Point the editor at the project's
+`node_modules/typescript/bin/tsc --lsp --stdio`, pass `runExternalCode: true` as an
+initialization option, and treat `.sqlts` files as TypeScript.
 
-Existing Zed grammar/extension installation is still a separate step. This tarball does
-not install or publish a Zed extension. Separate-project tests verify native inferred hovers, saved-helper diagnostic refresh, SQL call previews, SQL coloring, and actual table/column completions from the installed tarball;
-we have not claimed a fresh-machine graphical Zed installation test.
-
-The installed preview launcher supplies an isolated Bun configuration, so starting the
-editor does not run the application's preload hooks. Its workers read the configured
-development database without importing application code. A tested command is:
+SQL coloring, table/column completion and query previews come from a second language server,
+`sqlts-preview` (`reylo-inline-preview` is the earlier name of the same command). It runs on
+Node by default; pass `--runtime bun` to run it on Bun. Either way it does not run the
+application's preload hooks, reads the development database from the environment, `.env.local`,
+`.env` or `.reylo.yaml`'s `direct_url`, and never imports application code:
 
 ```sh
-node node_modules/@sqlts/core/src/sqlts/preview-cli.js --project /absolute/path/to/application
+npx sqlts-preview --project /absolute/path/to/application
+npx sqlts-preview --runtime bun --project /absolute/path/to/application
 ```
 
-For Zed, merge equivalent binary overrides into the existing registered servers:
+### Zed
+
+Install the SQLTS extension (`editors/zed` in the source repository; until it is listed in
+Zed's extension registry, run `zed: install dev extension` on that directory). It starts the
+project's installed `@sqlts/core` preview server with Node, or with Bun when configured. Then
+add to the project's `.zed/settings.json`, merging with existing settings:
 
 ```json
 {
   "file_types": { "TypeScript": ["sqlts"] },
+  "languages": {
+    "TypeScript": {
+      "language_servers": ["sqlts", "typescript-ls", "..."],
+      "semantic_tokens": "combined"
+    },
+    "TSX": { "language_servers": ["sqlts", "typescript-ls", "..."], "semantic_tokens": "combined" }
+  },
   "lsp": {
     "typescript-ls": {
       "binary": { "path": "node_modules/typescript/bin/tsc", "arguments": ["--lsp", "--stdio"] },
       "initialization_options": { "runExternalCode": true }
     },
-    "reylo-inline-preview": {
-      "binary": {
-        "path": "node_modules/.bin/reylo-inline-preview",
-        "arguments": ["--project", "/absolute/path/to/application"]
-      }
-    }
+    "sqlts": { "settings": { "runtime": "node" } }
   }
 }
 ```
 
-The registered SQL preview extension is still required. Preserve the application's
-existing language-server selection and SQL coloring configuration; these overrides
-do not install an extension or replace the rest of the user's Zed settings.
+`"runtime": "bun"` runs the preview server on Bun. The `sqlts` entry is optional when using Node.
+Restart the language servers after changing these settings.
+
+### Other editors
+
+Any editor that can run TypeScript 7's language server with `runExternalCode` gets types and
+SQL errors. Any LSP client can also start `sqlts-preview --project <root>` over stdio for
+coloring (semantic tokens), completion and previews. VS Code and Cursor need a small extension
+to launch it; none is published yet.
 
 ## Schema changes and migration tools
 
@@ -186,8 +202,12 @@ PGlite browser playground.
 import { build } from "esbuild";
 import sqlts from "@sqlts/core/esbuild";
 await build({
-  entryPoints: ["src/app.ts"], outfile: "dist/app.mjs",
-  bundle: true, platform: "node", format: "esm", packages: "external",
+  entryPoints: ["src/app.ts"],
+  outfile: "dist/app.mjs",
+  bundle: true,
+  platform: "node",
+  format: "esm",
+  packages: "external",
   plugins: [sqlts()],
 });
 ```

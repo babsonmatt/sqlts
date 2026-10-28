@@ -2,7 +2,7 @@
   "languages": {
     "TypeScript": {
       "language_servers": [
-        "reylo-inline-preview",
+        "sqlts",
         "typescript-ls",
         "!reylo-compose-preview",
         "!vtsls",
@@ -13,7 +13,7 @@
     },
     "TSX": {
       "language_servers": [
-        "reylo-inline-preview",
+        "sqlts",
         "typescript-ls",
         "!reylo-compose-preview",
         "!vtsls",
@@ -27,10 +27,7 @@
     "typescript-ls": {
       "binary": {
         "path": "node_modules/typescript/bin/tsc",
-        "arguments": [
-          "--lsp",
-          "--stdio"
-        ]
+        "arguments": ["--lsp", "--stdio"]
       },
       "initialization_options": {
         "runExternalCode": true
@@ -38,8 +35,6 @@
     }
   },
   "file_types": {
-    "TypeScript": [
-      "sqlts"
-    ]
+    "TypeScript": ["sqlts"]
   }
 }

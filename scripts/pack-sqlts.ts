@@ -83,7 +83,7 @@ await writeFile(
   JSON.stringify(
     {
       name: "@sqlts/core",
-      version: "0.1.1",
+      version: "0.1.2",
       description:
         "Write PostgreSQL in TypeScript and keep inferred types, with SQL-aware checking.",
       keywords: ["sql", "postgres", "postgresql", "typescript", "types", "query", "reylo"],
@@ -105,6 +105,8 @@ await writeFile(
       // npm publish rejects bin paths with a leading "./".
       bin: {
         sqlts: "src/sqlts/cli.js",
+        "sqlts-preview": "src/sqlts/preview-cli.js",
+        // Earlier name, kept for existing editor settings.
         "reylo-inline-preview": "src/sqlts/preview-cli.js",
       },
       typescript: {

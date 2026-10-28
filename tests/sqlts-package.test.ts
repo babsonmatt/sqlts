@@ -5,7 +5,7 @@ import { position } from "../src/preview.ts";
 import { afterAll, expect, test } from "bun:test";
 import { mkdtemp, writeFile, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 const root = resolve(".");
 const dir = await mkdtemp(resolve(tmpdir(), "sqlts-installed-"));
 const production = await mkdtemp(resolve(tmpdir(), "sqlts-production-"));
@@ -33,7 +33,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     JSON.stringify({
       type: "module",
       scripts: {
-        "check:sql": "sqlts check -p tsconfig.json",
+        "check:sql": "tsc --noEmit --runExternalCode -p tsconfig.json",
         check: "bun run check:sql",
       },
       dependencies: {
@@ -44,6 +44,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
         pg: "8.23.1",
         "@types/node": "26.6.5",
         "@types/pg": "8.23.1",
+        esbuild: "0.28.2",
       },
     }),
   );
@@ -86,11 +87,11 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     "tsconfig.json",
   ]);
   expect(checked.code, checked.output).toBe(0);
-  // Bun dispatches the package script; the installed SQLTS CLI invokes the native
-  // mapper-enabled TypeScript compiler. This is not Bun's built-in checker.
+  // Bun dispatches the package script, which runs the native mapper-enabled TypeScript
+  // compiler directly. This is not Bun's built-in checker.
   const shortcut = await run([process.execPath, "check"]);
   expect(shortcut.code, shortcut.output).toBe(0);
-  expect(shortcut.output).toContain("sqlts check");
+  expect(shortcut.output).toContain("--runExternalCode");
   const queryFile = resolve(dir, "queries.sqlts");
   const consumerFile = resolve(dir, "consumer.ts");
   const helperFile = resolve(dir, "fragments.sqlts");
@@ -200,61 +201,74 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   } finally {
     await native.close();
   }
+  // The preview server runs on whichever runtime starts its launcher. Neither runtime may
+  // execute the application's preload hooks, and both read the database from the project's .env.
   await writeFile(resolve(dir, "bunfig.toml"), 'preload = ["./must-not-load.ts"]\n');
   await writeFile(
     resolve(dir, "must-not-load.ts"),
     'throw Error("Editor executed application preload");',
   );
-  const preview = client(
-    [
-      Bun.which("node")!,
-      resolve(dir, "node_modules/@sqlts/core/src/sqlts/preview-cli.js"),
-      "--project",
+  await writeFile(resolve(dir, ".env"), `DATABASE_URL=${process.env.DATABASE_URL}\n`);
+  const nodeOnly = dirname(Bun.which("node")!);
+  for (const [runtime, env] of [
+    // No Bun on PATH: the published package must not need it.
+    ["node", { PATH: nodeOnly }],
+    ["bun", {}],
+  ] as const) {
+    const preview = client(
+      [
+        Bun.which("node")!,
+        resolve(dir, "node_modules/@sqlts/core/src/sqlts/preview-cli.js"),
+        "--runtime",
+        runtime,
+        "--project",
+        dir,
+      ],
+      { ...env, DATABASE_URL: undefined },
+      undefined,
+      undefined,
       dir,
-    ],
-    { DATABASE_URL: process.env.DATABASE_URL },
-    undefined,
-    undefined,
-    dir,
-  );
-  const queryUri = pathToFileURL(resolve(dir, "queries.sqlts")).href;
-  const editing =
-    'import {sql} from "@sqlts/core";export const query=()=>sql`SELECT u. FROM reylo_inline_demo.users u`;';
-  try {
-    await preview.request("initialize", {
-      processId: process.pid,
-      rootUri: pathToFileURL(dir).href,
-      capabilities: {},
-    });
-    preview.notify("initialized", {});
-    preview.notify("textDocument/didOpen", {
-      textDocument: { uri: queryUri, languageId: "typescript", version: 1, text: editing },
-    });
-    const suggestions = await preview.request("textDocument/completion", {
-      textDocument: { uri: queryUri },
-      position: position(editing, editing.indexOf("u. FROM") + 2),
-    });
-    expect(JSON.stringify(suggestions)).toContain('"label":"email"');
-    expect(JSON.stringify(suggestions)).toContain('"label":"id"');
-    const colors = (await preview.request("textDocument/semanticTokens/full", {
-      textDocument: { uri: queryUri },
-    })) as { data: number[] };
-    expect(colors.data.length).toBeGreaterThan(0);
-    preview.notify("textDocument/didClose", { textDocument: { uri: queryUri } });
-    preview.notify("textDocument/didOpen", {
-      textDocument: { uri: callerUri, languageId: "typescript", version: 1, text: callerSource },
-    });
-    const sqlHover = await preview.request("textDocument/hover", {
-      textDocument: { uri: callerUri },
-      position: position(callerSource, callerSource.lastIndexOf("users(10)")),
-    });
-    expect(JSON.stringify(sqlHover)).toContain("SELECT id,name");
-    expect(JSON.stringify(sqlHover)).toContain("$1 = 10");
-  } finally {
-    await preview.close();
-    await rm(resolve(dir, "bunfig.toml"));
-    await rm(resolve(dir, "must-not-load.ts"));
+    );
+    const queryUri = pathToFileURL(resolve(dir, "queries.sqlts")).href;
+    const editing =
+      'import {sql} from "@sqlts/core";export const query=()=>sql`SELECT u. FROM reylo_inline_demo.users u`;';
+    try {
+      await preview.request("initialize", {
+        processId: process.pid,
+        rootUri: pathToFileURL(dir).href,
+        capabilities: {},
+      });
+      preview.notify("initialized", {});
+      preview.notify("textDocument/didOpen", {
+        textDocument: { uri: queryUri, languageId: "typescript", version: 1, text: editing },
+      });
+      const suggestions = await preview.request("textDocument/completion", {
+        textDocument: { uri: queryUri },
+        position: position(editing, editing.indexOf("u. FROM") + 2),
+      });
+      expect(JSON.stringify(suggestions), runtime).toContain('"label":"email"');
+      expect(JSON.stringify(suggestions)).toContain('"label":"id"');
+      const colors = (await preview.request("textDocument/semanticTokens/full", {
+        textDocument: { uri: queryUri },
+      })) as { data: number[] };
+      expect(colors.data.length).toBeGreaterThan(0);
+      preview.notify("textDocument/didClose", { textDocument: { uri: queryUri } });
+      preview.notify("textDocument/didOpen", {
+        textDocument: { uri: callerUri, languageId: "typescript", version: 1, text: callerSource },
+      });
+      const sqlHover = await preview.request("textDocument/hover", {
+        textDocument: { uri: callerUri },
+        position: position(callerSource, callerSource.lastIndexOf("users(10)")),
+      });
+      expect(JSON.stringify(sqlHover)).toContain("SELECT id,name");
+      expect(JSON.stringify(sqlHover)).toContain("$1 = 10");
+    } finally {
+      await preview.close();
+    }
   }
+  await rm(resolve(dir, "bunfig.toml"));
+  await rm(resolve(dir, "must-not-load.ts"));
+  await rm(resolve(dir, ".env"));
   for (const args of [
     [Bun.which("node")!, "--import", "@sqlts/core/register", "consumer.ts"],
     [process.execPath, "--preload", "@sqlts/core/register", "consumer.ts"],
@@ -265,14 +279,8 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   }
   await writeFile(
     resolve(dir, "build.ts"),
-    `import {buildSqlts} from '@sqlts/core/build';await buildSqlts('./consumer.ts','./deployment.mjs');`,
+    `import {buildSqlts} from '@sqlts/core/build';await buildSqlts('./consumer.ts',process.argv[2]);`,
   );
-  const built = await run([process.execPath, "build.ts"]);
-  expect(built.code, built.output).toBe(0);
-  const bundle = await readFile(resolve(dir, "deployment.mjs"), "utf8");
-  expect(bundle).not.toContain(root);
-  expect(bundle).not.toContain("@reylosql/postgres");
-  expect(bundle).not.toContain("typescript-ast");
   await writeFile(
     resolve(production, "package.json"),
     JSON.stringify({
@@ -283,24 +291,36 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
       },
     }),
   );
-  await writeFile(resolve(production, "deployment.mjs"), bundle);
   const prodInstall = await run(
     [process.execPath, "install", "--offline", "--ignore-scripts"],
     production,
   );
   expect(prodInstall.code, prodInstall.output).toBe(0);
-  await writeFile(
-    resolve(production, "run.mjs"),
-    `import {createRequire} from 'node:module';import {strict as assert} from 'node:assert';import {Pool} from 'pg';import {consume} from './deployment.mjs';
+  // Node bundles with esbuild, Bun with Bun.build; both outputs run on plain Node.
+  for (const [name, runtime] of [
+    ["node", Bun.which("node")!],
+    ["bun", process.execPath],
+  ] as const) {
+    const built = await run([runtime, "build.ts", `./deployment-${name}.mjs`]);
+    expect(built.code, built.output).toBe(0);
+    const bundle = await readFile(resolve(dir, `deployment-${name}.mjs`), "utf8");
+    expect(bundle).not.toContain(root);
+    expect(bundle).not.toContain("@reylosql/postgres");
+    expect(bundle).not.toContain("typescript-ast");
+    await writeFile(resolve(production, "deployment.mjs"), bundle);
+    await writeFile(
+      resolve(production, "run.mjs"),
+      `import {createRequire} from 'node:module';import {strict as assert} from 'node:assert';import {Pool} from 'pg';import {consume} from './deployment.mjs';
   const require=createRequire(import.meta.url);assert.throws(()=>require.resolve('typescript-ast'));assert.throws(()=>require.resolve('@sqlts/core'));
   const db=new Pool({connectionString:process.env.DATABASE_URL});try{assert.equal(await consume(db),'Alice');}finally{await db.end();}`,
-  );
-  const executedProduction = await run([Bun.which("node")!, "run.mjs"], production);
-  expect(executedProduction.code, executedProduction.output).toBe(0);
-  const offline = await run([Bun.which("node")!, "deployment.mjs"], production, {
-    ...process.env,
-    DATABASE_URL: "postgres://invalid:invalid@127.0.0.1:1/unavailable",
-  });
-  expect(offline.code, offline.output).toBe(0);
-  expect(offline.output).toContain('"values":[10]');
-}, 60_000);
+    );
+    const executedProduction = await run([Bun.which("node")!, "run.mjs"], production);
+    expect(executedProduction.code, executedProduction.output).toBe(0);
+    const offline = await run([Bun.which("node")!, "deployment.mjs"], production, {
+      ...process.env,
+      DATABASE_URL: "postgres://invalid:invalid@127.0.0.1:1/unavailable",
+    });
+    expect(offline.code, offline.output).toBe(0);
+    expect(offline.output).toContain('"values":[10]');
+  }
+}, 120_000);

@@ -1,7 +1,8 @@
 [package]
-name = "reylo-inline-preview"
-version = "0.2.0"
+name = "sqlts-zed"
+version = "0.1.0"
 edition = "2021"
+license = "MIT"
 publish = false
 
 [lib]

@@ -1,11 +1,12 @@
-id = "reylo-inline-preview"
-name = "Reylo Inline SQL Preview"
-version = "0.2.0"
+id = "sqlts"
+name = "SQLTS"
+version = "0.1.0"
 schema_version = 1
-authors = ["Local development"]
-description = "Live SQL alternatives and binding previews for the independent inline SQL experiment."
+authors = ["Matt DiDomenico"]
+description = "SQL coloring, table and column completion, and query previews for SQLTS (@sqlts/core)."
+repository = "https://github.com/babsonmatt/sqlts"
 
-[language_servers.reylo-inline-preview]
-name = "Reylo Inline SQL Preview"
+[language_servers.sqlts]
+name = "SQLTS"
 languages = ["TypeScript", "TSX"]
 opt_in_languages = ["TypeScript", "TSX"]

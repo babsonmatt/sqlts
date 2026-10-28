@@ -159,8 +159,8 @@ to this checkout's absolute compiler path; update that path on another machine.
 
 Types, SQL previews, cross-file completion and SQL diagnostics are covered by native
 LSP protocol tests. Type hover and SQL preview were also verified visually in Zed.
-SQL coloring and catalog completion use the installed `reylo-inline-preview`
-extension and `scripts/preview-server.ts` (Bun). The subdirectory settings point
+SQL coloring and catalog completion use the SQLTS Zed extension (`editors/zed`)
+and `scripts/preview-server.ts` (Bun in this checkout; Node or Bun from the package). The subdirectory settings point
 that server at the checkout root for its development database configuration. The
 native TypeScript server remains responsible for `.sqlts` diagnostics, inferred
 caller types, and query-tag hovers; the preview server does not duplicate SQLTS
@@ -475,7 +475,6 @@ Observer exceptions do not change execution. `enableQueryTracing` from
 `@sqlts/core/tracing` forwards those events to Node/Bun's `sqlts:query`
 diagnostics channel; call its returned function to disable it. No timing is collected
 without subscribers.
-
 
 ### Native affected-row counts
 

@@ -67,11 +67,11 @@ Check settings for the folder actually opened in Zed. Settings inside `experimen
 }
 ```
 
-Merge these fields, preserving other associations and servers. Resolve the compiler path relative to the opened project; a separately opened subdirectory may need the checkout's absolute compiler path. Ensure TypeScript's active language server is `typescript-ls` using that binary, rather than another server that ignores these settings. Reuse the checkout's existing server registration/selection; this snippet alone does not install a Zed extension. Use `initialization_options.runExternalCode` for LSP startup, not the checker's CLI flag in the server arguments. Keep this project-scoped.
+Merge these fields, preserving other associations and servers. Resolve the compiler path relative to the opened project; a separately opened subdirectory may need the checkout's absolute compiler path. Ensure TypeScript's active language server is `typescript-ls` using that binary, rather than another server that ignores these settings. Reuse the checkout's existing server registration/selection; this snippet alone does not install the SQLTS Zed extension. Use `initialization_options.runExternalCode` for LSP startup, not the checker's CLI flag in the server arguments. Keep this project-scoped.
 
 After changing initialization settings or upgrading the mapper, restart the language server or reopen the project once. Saved shared-helper edits then refresh automatically through native registered file watches; no consumer edit or routine restart is needed. Unsaved helpers retain the fingerprint diagnostic until saved. Verify that the consumer resolves its `.sqlts` import and hovering an inferred result field shows the expected type instead of `any`. A passing CLI check plus TS2307 in Zed is a reason to inspect the active server, opened project, and mapper initialization. If the editor reports a database connection error, verify its connection environment separately from the shell's environment.
 
-SQL coloring and table/column/function completion come from `reylo-inline-preview`, running with Bun (`scripts/preview-server.ts` in the checkout, a packaged JavaScript binary in the tarball). The repository extension launches it automatically; the separately opened SQLTS demo uses a local binary override and passes the checkout root with `--project` so its catalog worker finds the development database configuration. Preserve this server alongside native TypeScript. The standalone Node `src/sqlts/color-server.ts` supports coloring only and will not supply table suggestions.
+SQL coloring and table/column/function completion come from the `sqlts` language server (`sqlts-preview`; `reylo-inline-preview` is its earlier name). In the checkout it runs `scripts/preview-server.ts` with Bun; from the installed package it runs on Node by default, or Bun with `--runtime bun` (Zed: `"lsp": { "sqlts": { "settings": { "runtime": "bun" } } }`). The SQLTS Zed extension (`editors/zed`) launches it automatically; the separately opened SQLTS demo uses a local binary override and passes the checkout root with `--project` so its catalog worker finds the development database configuration. Preserve this server alongside native TypeScript. The standalone Node `src/sqlts/color-server.ts` supports coloring only and will not supply table suggestions.
 
 Use Control-Space / `editor: show completions` after `FROM schema.` or an alias such as `u.`. The catalog is cached for 60 seconds and refreshed on save or `reylo.inline.refreshSchema`. Verify suggestions against unsaved SQL, including nested `sql.fragment` predicates. The preview server leaves SQLTS validation and inferred caller types to native TypeScript; these are separate from catalog suggestions.
 
@@ -82,9 +82,9 @@ Use a small query against an existing development table and an ordinary TypeScri
 ## Optional production deployment
 
 The no-generation development loader analyzes at module load. For production, first typecheck,
-then run `bun node_modules/@sqlts/core/src/sqlts/cli.js build app.ts dist/app.mjs`.
-The checkout equivalent is `bun run sqlts:build app.ts dist/app.mjs`. The bundler needs Bun
-and the development database, but the emitted module runs on Node/Bun with only the
+then run `npx sqlts build app.ts dist/app.mjs` (Node, needs esbuild installed) or
+`bunx --bun sqlts build app.ts dist/app.mjs` (Bun.build). The checkout equivalent is
+`bun run sqlts:build app.ts dist/app.mjs`. The bundler needs the development database, but the emitted module runs on Node/Bun with only the
 application's runtime dependencies (including `reylo@0.6` and its driver). SQLTS, the
 compiler and the SQL analyzer are not required there. Query execution still needs the
 production database; Reylo's periodic schema checks remain active.
@@ -94,9 +94,9 @@ replace typechecking. Source-mapped runtime stacks and Cloudflare adapters remai
 The package does not automatically install the Zed extension; distinguish portable CLI/LSP
 tests from a graphical editor setup test.
 
-The package's `reylo-inline-preview` command is a Node launcher for Bun. Use
-that command (or `node node_modules/@sqlts/core/src/sqlts/preview-cli.js`)
-with `--project /absolute/path/to/application`; it supplies the packaged isolated Bun
-configuration and workers. Do not launch its internal preview-server.js directly:
+The package's `sqlts-preview` command starts the preview server on Node, or on Bun with
+`--runtime bun`. Use that command (or `node node_modules/@sqlts/core/src/sqlts/preview-cli.js`)
+with `--project /absolute/path/to/application`; it keeps application preload hooks out of
+the server and its workers. Do not launch its internal preview-server.js directly:
 that can inherit application preload hooks. The existing checkout extension already
 passes its isolated configuration. See PORTABILITY.md for Zed binary override examples.

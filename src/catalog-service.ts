@@ -1,7 +1,6 @@
-import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Catalog } from "./catalog.ts";
-const codeRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+import { runWorker, type Worker } from "./worker.ts";
 const empty: Catalog = { relations: [], schemas: [], keywords: [] };
 interface Options {
   projectRoot?: string;
@@ -14,7 +13,7 @@ export class CatalogService {
   private catalog = empty;
   private expires = 0;
   private loading?: Promise<Catalog>;
-  private child?: ReturnType<typeof Bun.spawn>;
+  private child?: Worker["child"];
   private stopped = false;
   private revision = 0;
   constructor(
@@ -68,23 +67,15 @@ export class CatalogService {
   private async read(): Promise<Catalog> {
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const child = Bun.spawn(
-        [
-          process.execPath,
-          `--config=${resolve(codeRoot, "editors/zed/server.bunfig.toml")}`,
-          fileURLToPath(new URL("../scripts/catalog-worker.ts", import.meta.url)),
-        ],
-        {
-          cwd: this.options.projectRoot ?? process.cwd(),
-          stdout: "pipe",
-          stderr: "ignore",
-        },
+      const { child, result } = runWorker(
+        fileURLToPath(new URL("../scripts/catalog-worker.ts", import.meta.url)),
+        this.options.projectRoot ?? process.cwd(),
       );
       this.child = child;
       timer = setTimeout(() => child.kill(), 8000);
-      const text = await new Response(child.stdout).text();
-      if ((await child.exited) !== 0) throw new Error("Catalog unavailable");
-      return JSON.parse(text) as Catalog;
+      const { code, stdout } = await result;
+      if (code !== 0) throw new Error("Catalog unavailable");
+      return JSON.parse(stdout) as Catalog;
     } finally {
       clearTimeout(timer);
       this.child = undefined;

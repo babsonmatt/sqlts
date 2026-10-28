@@ -20,7 +20,7 @@ if (command === "check") {
   console.log(await buildSqlts(args[0]!, args[1]!));
 } else {
   console.error(
-    "Usage: sqlts check -p tsconfig.json\n       sqlts refresh-schema --project directory\n       bun sqlts build entry.ts output.mjs",
+    "Usage: sqlts check -p tsconfig.json\n       sqlts refresh-schema --project directory\n       sqlts build entry.ts output.mjs (Node needs esbuild; Bun uses Bun.build)",
   );
   process.exitCode = 1;
 }

@@ -1,15 +1,15 @@
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { isAbsolute, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { SqlDiagnostic } from "./diagnostics.ts";
+import { runWorker, type Worker } from "./worker.ts";
 
-const codeRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 type Job = { generation: number; uri: string; file: string; text: string; version: number };
 
 /** Debounce edits; run at most one isolated analyzer; discard superseded results. */
 export class DiagnosticScheduler {
   private timers = new Map<string, ReturnType<typeof setTimeout>>();
   private pending = new Map<string, Job>();
-  private active?: { job: Job; child: ReturnType<typeof Bun.spawn> };
+  private active?: { job: Job; child: Worker["child"] };
   private stopped = false;
   private serial = 0;
   private generations = new Map<string, number>();
@@ -76,29 +76,21 @@ export class DiagnosticScheduler {
         severity: 2,
         source: "reylo-inline",
         message:
-          "SQL validation unavailable or timed out. Check the development database configuration and run bun run typecheck for details.",
+          "SQL validation unavailable or timed out. Check the development database configuration and run tsc --noEmit --runExternalCode for details.",
       },
     ];
     let diagnostics = unavailable;
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      const child = Bun.spawn(
-        [
-          process.execPath,
-          `--config=${resolve(codeRoot, "editors/zed/server.bunfig.toml")}`,
-          fileURLToPath(new URL("../scripts/diagnostics-worker.ts", import.meta.url)),
-        ],
-        {
-          cwd: this.projectRoot,
-          stdin: new Blob([JSON.stringify(job)]),
-          stdout: "pipe",
-          stderr: "ignore",
-        },
+      const { child, result } = runWorker(
+        fileURLToPath(new URL("../scripts/diagnostics-worker.ts", import.meta.url)),
+        this.projectRoot,
+        JSON.stringify(job),
       );
       this.active = { job, child };
       timer = setTimeout(() => child.kill(), 15_000);
-      const output = await new Response(child.stdout).text();
-      if ((await child.exited) === 0) diagnostics = JSON.parse(output) as SqlDiagnostic[];
+      const { code, stdout } = await result;
+      if (code === 0) diagnostics = JSON.parse(stdout) as SqlDiagnostic[];
     } catch {
       /* Surface availability, never connection strings or child stacks. */
     } finally {

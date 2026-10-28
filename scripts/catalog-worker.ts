@@ -1,13 +1,15 @@
-import { SQL } from "bun";
+import { existsSync, readFileSync } from "node:fs";
+import pg from "pg";
 import type { Catalog, Relation, SqlFunction, SqlType } from "../src/catalog.ts";
 
+// Runs on Node or Bun. The launcher loads .env and .env.local; .reylo.yaml's direct_url wins.
 let url = process.env.DATABASE_URL;
-const configs = [".reylo.yaml", ".reylo.yml"];
-for (const file of configs) {
-  if (!(await Bun.file(file).exists())) continue;
-  const config = Bun.YAML.parse(await Bun.file(file).text()) as { direct_url?: string };
-  if (config.direct_url)
-    url = config.direct_url.replace(/\$\{([^}]+)\}/g, (_, key: string) => {
+for (const file of [".reylo.yaml", ".reylo.yml"]) {
+  if (!existsSync(file)) continue;
+  const line = /^direct_url:[ \t]*(.+?)[ \t]*(?:#.*)?$/m.exec(readFileSync(file, "utf8"))?.[1];
+  const written = line?.replace(/^(["'])(.*)\1$/, "$2");
+  if (written)
+    url = written.replace(/\$\{([^}]+)\}/g, (_, key: string) => {
       const value = process.env[key];
       if (value === undefined) throw new Error("Missing database configuration variable");
       return value;
@@ -16,19 +18,19 @@ for (const file of configs) {
 }
 if (!url || !/^postgres(?:ql)?:/.test(url))
   throw new Error("A PostgreSQL development database is required");
-const db = new SQL(url, { max: 1, connectionTimeout: 5 });
+const db = new pg.Client({ connectionString: url, connectionTimeoutMillis: 5000 });
+await db.connect();
+const query = async <T>(text: string) => (await db.query(text)).rows as T[];
 try {
   // Read catalog metadata only: no user query or application code is executed.
-  const rows = await db<
-    {
-      schema: string;
-      table: string;
-      visible: boolean;
-      column: string | null;
-      type: string | null;
-      nullable: boolean;
-    }[]
-  >`
+  const rows = await query<{
+    schema: string;
+    table: string;
+    visible: boolean;
+    column: string | null;
+    type: string | null;
+    nullable: boolean;
+  }>(`
     SELECT n.nspname AS schema, c.relname AS table,
       pg_catalog.pg_table_is_visible(c.oid) AS visible,
       a.attname AS column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS type,
@@ -44,7 +46,7 @@ try {
         OR pg_catalog.has_any_column_privilege(c.oid, 'SELECT,INSERT,UPDATE'))
     ORDER BY n.nspname, c.relname, a.attnum
     LIMIT 50001
-  `;
+  `);
   if (rows.length > 50000) throw new Error("Completion catalog exceeds 50000 columns");
   const relations = new Map<string, Relation>();
   for (const row of rows) {
@@ -61,8 +63,8 @@ try {
         .get(key)!
         .columns.push({ name: row.column, type: row.type!, nullable: row.nullable });
   }
-  const keywords = await db<{ word: string }[]>`SELECT word FROM pg_catalog.pg_get_keywords()`;
-  const functions = await db<SqlFunction[]>`
+  const keywords = await query<{ word: string }>(`SELECT word FROM pg_catalog.pg_get_keywords()`);
+  const functions = await query<SqlFunction>(`
     SELECT n.nspname AS schema, p.proname AS name,
       pg_catalog.pg_function_is_visible(p.oid) AS visible,
       pg_catalog.pg_get_function_arguments(p.oid) AS arguments,
@@ -88,9 +90,9 @@ try {
       AND pg_catalog.has_schema_privilege(n.oid, 'USAGE')
       AND pg_catalog.has_function_privilege(p.oid, 'EXECUTE')
     ORDER BY n.nspname, p.proname, p.oid LIMIT 10001
-  `;
+  `);
   if (functions.length > 10000) throw new Error("Completion catalog exceeds 10000 functions");
-  const types = await db<SqlType[]>`
+  const types = await query<SqlType>(`
     SELECT pg_catalog.format_type(t.oid,NULL) AS name,
       CASE WHEN t.typelem <> 0 THEN pg_catalog.format_type(t.typelem,NULL) END AS element,
       CASE WHEN r.rngsubtype IS NOT NULL THEN pg_catalog.format_type(r.rngsubtype,NULL) END AS "rangeSubtype",
@@ -101,7 +103,7 @@ try {
     LEFT JOIN pg_catalog.pg_range r ON r.rngtypid=t.oid
     LEFT JOIN pg_catalog.pg_range m ON m.rngmultitypid=t.oid
     WHERE pg_catalog.has_schema_privilege(n.oid,'USAGE') ORDER BY t.oid LIMIT 10001
-  `;
+  `);
   if (types.length > 10000) throw new Error("Completion catalog exceeds 10000 types");
   const catalog: Catalog = {
     types,
@@ -112,5 +114,5 @@ try {
   };
   process.stdout.write(JSON.stringify(catalog));
 } finally {
-  await db.close();
+  await db.end();
 }

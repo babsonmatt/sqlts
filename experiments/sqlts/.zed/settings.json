@@ -5,7 +5,7 @@
   "languages": {
     "TypeScript": {
       "language_servers": [
-        "reylo-inline-preview",
+        "sqlts",
         "typescript-ls",
         "!reylo-compose-preview",
         "!vtsls",
@@ -24,7 +24,7 @@
         "runExternalCode": true
       }
     },
-    "reylo-inline-preview": {
+    "sqlts": {
       "binary": {
         "path": "bun",
         "arguments": [

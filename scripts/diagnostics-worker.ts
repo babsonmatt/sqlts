@@ -2,7 +2,9 @@ import { resolve } from "node:path";
 import { tooling } from "../src/adapter/reylo.ts";
 import { diagnose } from "../src/diagnostics.ts";
 
-const input = JSON.parse(await Bun.stdin.text()) as { text: string; file: string };
+let stdin = "";
+for await (const chunk of process.stdin) stdin += chunk;
+const input = JSON.parse(stdin) as { text: string; file: string };
 const handlers = tooling.mapperHandlers();
 const projectHandle = `editor-${crypto.randomUUID()}`;
 try {

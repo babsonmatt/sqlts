@@ -3,7 +3,7 @@
     "TypeScript": {
       "language_servers": [
         "typescript-ls",
-        "!reylo-inline-preview",
+        "!sqlts",
         "!reylo-compose-preview",
         "!vtsls",
         "!typescript-language-server"
