@@ -196,7 +196,7 @@ Mapper-generated helper names can appear in native query-tag hover signatures.
   `.sqlts` file. Plain `.ts` use deliberately fails instead of returning `any`.
 - The loader strips TypeScript; it does not replace type checking. Run the native
   checker to reject TypeScript errors, as you would for ordinary application code.
-- Mapper/compiler integration is beta and the analyzer uses Reylo pinned to commit c8a03f97b870ddea6bb973485bacf4737c82f502 (private build 0.5.0-sqlts.c8a03f9)
+- Mapper/compiler integration is beta and the analyzer uses Reylo 0.6.x (public npm release)
   internals. The analysis parser is the existing TypeScript 5.9 AST dependency.
 - Schema freshness follows Reylo. After a migration signal `refresh-schema --project .`
   and run a fresh SQL-aware check. The signal refreshes editor catalogs and unchanged-file

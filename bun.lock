@@ -5,10 +5,10 @@
     "": {
       "name": "reylo-inline-sql-experiment",
       "dependencies": {
-        "reylo": "file:vendor/reylo/reylo-0.5.0-sqlts.c8a03f9.tgz",
+        "reylo": "0.6.0",
       },
       "devDependencies": {
-        "@reylosql/postgres": "file:vendor/reylo/reylosql-postgres-0.5.0-sqlts.c8a03f9.tgz",
+        "@reylosql/postgres": "0.6.0",
         "@types/bun": "1.4.3",
         "@types/pg": "8.23.1",
         "@typescript/native-preview": "7.0.0-dev.20260707.2",
@@ -173,7 +173,7 @@
 
     "@oxlint/binding-win32-x64-msvc": ["@oxlint/binding-win32-x64-msvc@1.89.0", "", { "os": "win32", "cpu": "x64" }, "sha512-hLFJ/o0f/dTJh/EW0vmcbREYSQO9tYgfiAAlsOkiLFiJuRRWvYtFELUXN5o2ijpSo/tlO1n+YlWN58tZwPG18A=="],
 
-    "@reylosql/postgres": ["@reylosql/postgres@vendor/reylo/reylosql-postgres-0.5.0-sqlts.c8a03f9.tgz", {}, "sha512-gIm9qOVQ2H1eHRq4VFSKyurfHNyEzCfM1l9K355VjgvzhK6ENZu9NkDkxILGGUacj6YLJ8OXJuuegqE9QzI01A=="],
+    "@reylosql/postgres": ["@reylosql/postgres@0.6.0", "", {}, "sha512-Y4BV7iloJapUvsUs6kCEmU4TVB7qPBuAECzW7yLjMByhDHmsH9lS/oyNZ0UfZp36AghXQfzdv7C71S0BKM5D0Q=="],
 
     "@rolldown/binding-android-arm-eabi": ["@rolldown/binding-android-arm-eabi@1.2.15", "", { "os": "android", "cpu": "arm" }, "sha512-aLcgK9gIJ3YRvrrtfSBbRa27F5WrpiTaPulnFpsHPxpUHgFlSgnU4854MHwoRGEBhfRJDWCS2WQ7lIjskE9Olw=="],
 
@@ -347,7 +347,7 @@
 
     "postgres-interval": ["postgres-interval@1.2.0", "", { "dependencies": { "xtend": "^4.0.0" } }, "sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ=="],
 
-    "reylo": ["reylo@vendor/reylo/reylo-0.5.0-sqlts.c8a03f9.tgz", { "peerDependencies": { "@reylosql/mysql": "0.5.0-sqlts.c8a03f9", "@reylosql/postgres": "0.5.0-sqlts.c8a03f9", "@reylosql/sqlite": "0.5.0-sqlts.c8a03f9", "slonik": ">=49.12.0" }, "optionalPeers": ["@reylosql/mysql", "@reylosql/postgres", "@reylosql/sqlite", "slonik"], "bin": { "reylo": "src/cli.js" } }, "sha512-DRa7d9CuailNt10zj0FRFPAHV5EVk3FEYEKK/2sXviLXMxA9nAHQekvoyahe85yQ2VNMnUFFQKQ3SypdN9j+Gw=="],
+    "reylo": ["reylo@0.6.0", "", { "peerDependencies": { "@reylosql/mysql": "0.6.0", "@reylosql/postgres": "0.6.0", "@reylosql/sqlite": "0.6.0", "slonik": ">=49.12.0" }, "optionalPeers": ["@reylosql/mysql", "@reylosql/postgres", "@reylosql/sqlite", "slonik"], "bin": { "reylo": "src/cli.js" } }, "sha512-Njt2l+11XWivq+wcfq0NMz5Y5tQoePmv3U5fD/wC95KjGPS1EY6UEx0/js5zhn+ayNiF4Q1Xelixx2iIbh5Ywg=="],
 
     "reylo-sqlts-experiment": ["reylo-sqlts-experiment@workspace:experiments/sqlts/plugin"],
 

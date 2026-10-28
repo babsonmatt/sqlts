@@ -7,8 +7,18 @@ inside `node_modules`.
 
 ## Another project
 
-Install the SQLTS tarball and both companion tarballs printed by `sqlts:pack` together using the project's package manager, plus `typescript@7.1.0-beta`, the application's driver (`pg` in our tests), and its normal
-Node/driver type packages. The package requires the companion Reylo and PostgreSQL engine builds at `0.5.0-sqlts.c8a03f9`. Do not substitute npm’s `0.5.0` or install an assumed public registry package. The analyzer is a verified WebAssembly artifact; installing these packages does not compile Rust. Tested on macOS arm64, Node 25.2.1 and Bun 1.4.4-canary.
+Install the SQLTS tarball printed by `sqlts:pack` with the project's package manager, together with
+`reylo@0.6` and `@reylosql/postgres@0.6` from npm, `typescript@7.1.0-beta`, the application's driver
+(`pg` in our tests), and its normal Node/driver type packages:
+
+```sh
+npm install /path/reylo-sqlts-experiment-0.0.3.tgz reylo@0.6 @reylosql/postgres@0.6 pg
+npm install -D typescript@7.1.0-beta @types/node @types/pg
+```
+
+SQLTS uses Reylo internals and accepts only Reylo 0.6.x; both Reylo packages must be the same
+version. The analyzer is a WebAssembly artifact shipped by `@reylosql/postgres`; installing these
+packages does not compile Rust. Tested on macOS arm64, Node 25.2.1 and Bun 1.4.4-canary.
 
 Configure the same `contentMappers` entry shown in README.md and include the query files
 and callers in the actual tsconfig. Load the development DATABASE_URL using the application's
@@ -75,7 +85,7 @@ bun run sqlts:build experiments/shared-queries/consumer.ts work/shared-demo.mjs
 This is explicitly an optional build step. It analyzes `.sqlts` modules at build time,
 bundles their runtime SQL metadata, and leaves installed packages external. The produced
 ES module runs on Node or Bun without the SQLTS loader, TypeScript or SQL analyzer.
-Install the matching `reylo-0.5.0-sqlts.c8a03f9.tgz` runtime, the application's driver, and any other application runtime dependencies
+Install the `reylo` 0.6.x runtime, the application's driver, and any other application runtime dependencies
 in production. The production database is still necessary to execute queries. Reylo's
 freshness checks are retained and can reject an incompatible deployed schema.
 
@@ -149,7 +159,7 @@ The isolated checkout demo is documented in `experiments/dbmate/README.md`.
 
 ## Vite SSR and esbuild
 
-The private tarball exports `reylo-sqlts-experiment/vite` and
+The SQLTS package exports `reylo-sqlts-experiment/vite` and
 `reylo-sqlts-experiment/esbuild`. Both are default plugin factories. Install your
 bundler separately; it is an optional peer dependency.
 

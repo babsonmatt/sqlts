@@ -1,4 +1,4 @@
-// MIT, Colin McDonnell. Reylo c8a03f97b870ddea6bb973485bacf4737c82f502. See vendor/reylo/ for license and provenance.
+// MIT, Colin McDonnell. Copied from Reylo c8a03f97b870ddea6bb973485bacf4737c82f502. See vendor/reylo/ for license and provenance.
 // Written by scripts/error-codes.ts from Postgres's src/backend/utils/errcodes.txt at REL_18_0; run it again rather than editing this file.
 
 /** Every SQLSTATE Postgres raises as an error, with its condition name. */

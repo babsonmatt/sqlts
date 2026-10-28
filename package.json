@@ -62,10 +62,10 @@
     "bench:sqlts:stress": "bun scripts/bench-sqlts-stress.ts"
   },
   "dependencies": {
-    "reylo": "file:vendor/reylo/reylo-0.5.0-sqlts.c8a03f9.tgz"
+    "reylo": "0.6.0"
   },
   "devDependencies": {
-    "@reylosql/postgres": "file:vendor/reylo/reylosql-postgres-0.5.0-sqlts.c8a03f9.tgz",
+    "@reylosql/postgres": "0.6.0",
     "@types/bun": "1.4.3",
     "@types/pg": "8.23.1",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",

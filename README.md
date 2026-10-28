@@ -135,7 +135,8 @@ execution. Type checking without regeneration cannot verify changed SQL text.
 - SQL authoring errors (including clause order and missing columns) are caught by
   generation. Quoted/commented interpolations and authored `$1`/`:name` placeholders
   are rejected; all bound parameters must come from `${...}`.
-- This uses Reylo internals pinned to commit c8a03f9 (private build 0.5.0-sqlts.c8a03f9). It is private experimental code,
+- This uses Reylo internals from the public `reylo` and `@reylosql/postgres` 0.6.x releases (checked per minor release in
+  `src/adapter/reylo.ts`). It is experimental code,
   not an official Reylo integration or a production-ready library.
 
 ## Verification and measurements
@@ -355,7 +356,7 @@ checker and Node/Bun runtime regressions with transaction rollback. Equivalent S
 branches and repeated query sites reuse analysis within a transform without bypassing
 subsequent schema validation.
 
-`bun run sqlts:pack` makes a private SQLTS tarball plus matching Reylo and PostgreSQL engine companion tarballs; install all three together. An optional `sqlts:build` moves analysis
+`bun run sqlts:pack` makes a SQLTS tarball; install it with `reylo@0.6` and `@reylosql/postgres@0.6` from npm. An optional `sqlts:build` moves analysis
 to deployment build time. See `experiments/sqlts/PORTABILITY.md` for setup, exact timing
 and remaining boundaries. These additions preserve the existing named API.
 

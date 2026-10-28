@@ -58,23 +58,20 @@ interface Values {
 const entry = import.meta.resolve("reylo");
 const manifest = JSON.parse(await readFile(new URL("../package.json", entry), "utf8")) as {
   version: string;
-  sqltsSourceCommit?: string;
 };
-if (
-  manifest.version !== "0.5.0-sqlts.c8a03f9" ||
-  manifest.sqltsSourceCommit !== "c8a03f97b870ddea6bb973485bacf4737c82f502"
-)
+// The internals used here (tooling, values.js, generated declarations) are verified per Reylo
+// minor release. 0.6.x matches the c8a03f9 build SQLTS was developed on; widen only after review.
+if (!/^0\.6\.\d+$/.test(manifest.version))
   throw new Error(
-    "This SQLTS build requires Reylo 0.5.0-sqlts.c8a03f9; review src/adapter/reylo.ts before upgrading",
+    `This SQLTS build requires Reylo 0.6.x (found ${manifest.version}); review src/adapter/reylo.ts before upgrading`,
   );
 const engineManifest = JSON.parse(
   await readFile(new URL(import.meta.resolve("@reylosql/postgres/package.json")), "utf8"),
-) as { version: string; sqltsSourceCommit?: string };
-if (
-  engineManifest.version !== manifest.version ||
-  engineManifest.sqltsSourceCommit !== manifest.sqltsSourceCommit
-)
-  throw new Error("Reylo and @reylosql/postgres must use the same pinned SQLTS source build");
+) as { version: string };
+if (engineManifest.version !== manifest.version)
+  throw new Error(
+    `reylo ${manifest.version} and @reylosql/postgres ${engineManifest.version} must be the same version`,
+  );
 const toolingPath = import.meta.resolve("@reylosql/postgres/tooling");
 const nativeTooling = (await import(toolingPath)).default as Tooling;
 const projectIdentities = new Map<string, string>();

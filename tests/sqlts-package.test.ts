@@ -24,13 +24,10 @@ async function run(
   ]);
   return { code, output: out + err };
 }
-test("a private tarball checks and runs outside the checkout, and builds an analyzer-free deployment", async () => {
+test("the packed tarball checks and runs outside the checkout, and builds an analyzer-free deployment", async () => {
   const packed = await run([process.execPath, "scripts/pack-sqlts.ts"], root);
   expect(packed.code, packed.output).toBe(0);
-  const { tarball, companions } = JSON.parse(packed.output.trim()) as {
-    tarball: string;
-    companions: Record<string, string>;
-  };
+  const { tarball } = JSON.parse(packed.output.trim()) as { tarball: string };
   await writeFile(
     resolve(dir, "package.json"),
     JSON.stringify({
@@ -41,8 +38,8 @@ test("a private tarball checks and runs outside the checkout, and builds an anal
       },
       dependencies: {
         "reylo-sqlts-experiment": tarball,
-        reylo: companions.reylo!,
-        "@reylosql/postgres": companions["@reylosql/postgres"]!,
+        reylo: "0.6.0",
+        "@reylosql/postgres": "0.6.0",
         typescript: "7.1.0-beta",
         pg: "8.23.1",
         "@types/node": "26.6.5",
@@ -281,7 +278,7 @@ test("a private tarball checks and runs outside the checkout, and builds an anal
     JSON.stringify({
       type: "module",
       dependencies: {
-        reylo: resolve(root, "vendor/reylo/reylo-0.5.0-sqlts.c8a03f9.tgz"),
+        reylo: "0.6.0",
         pg: "8.23.1",
       },
     }),

@@ -1,22 +1,28 @@
-# Pinned Reylo source build
+# Code copied from Reylo
 
-Upstream: https://github.com/colinhacks/reylo/tree/c8a03f97b870ddea6bb973485bacf4737c82f502
+Reylo (https://github.com/colinhacks/reylo) is MIT-licensed; its license is in `LICENSE` here.
 
-The runtime and PostgreSQL engine are built from this exact revision. `revision.json` records the package SHA-256 values and the engine artifact hash. The upstream engine is committed WASM; upstream fingerprint tests passed against its source. The private version `0.5.0-sqlts.c8a03f9` and `sqltsSourceCommit` manifest field distinguish these packages from the published 0.5.0 release. SQLTS rejects a mismatched pair.
+SQLTS depends on the public `reylo` and `@reylosql/postgres` packages from npm (0.6.x). A few files
+in this repository are copied from Reylo source at commit
+[c8a03f9](https://github.com/colinhacks/reylo/tree/c8a03f97b870ddea6bb973485bacf4737c82f502) and
+keep that license:
 
-## Installation
+- `src/postgres-codes.ts`
+- the lexical helpers used by `src/adapter/reylo.ts`
 
-Run `bun install` in this checkout. For another project run `bun run sqlts:pack`, then install all three paths printed by it together:
+## Upgrading Reylo
 
-```sh
-bun add /path/reylo-sqlts-experiment-0.0.3.tgz /path/reylo-0.5.0-sqlts.c8a03f9.tgz /path/reylosql-postgres-0.5.0-sqlts.c8a03f9.tgz pg
-bun add -d typescript@7.1.0-beta @types/node @types/pg
-```
+`src/adapter/reylo.ts` uses Reylo internals (the `@reylosql/postgres/tooling` entry, `values.js`,
+and the layout of generated declarations), so it accepts one minor version at a time. Before
+widening it:
 
-A runtime-only application bundle needs the matching Reylo runtime and its database driver. The engine and SQLTS checker are development/build dependencies for that deployment.
+1. Diff the new `reylo` and `@reylosql/postgres` packages against the current ones (runtime files,
+   `tooling`, `values.js`) and read the upstream changes to the PostgreSQL engine.
+2. Update the version check in `src/adapter/reylo.ts`, the dependencies in `package.json`, and the
+   peer ranges in `scripts/pack-sqlts.ts`.
+3. Run `bun run check`, including the packaging test, which installs the packed SQLTS tarball in a
+   fresh project.
 
-## Rebuilding
-
-Fetch the commit above, read its AGENTS.md, and install the root, packages/postgres, packages/mysql, and site dependencies. Run `node --test tests/fingerprint.test.ts`, then the upstream `scripts/build.ts`. The local build used Bun instead of the unavailable nub launcher for the script's single `build:play` invocation; no analyzer/runtime sources changed. Use the upstream lockfiles. Copy the upstream LICENSE into both package directories. Change the generated runtime and PostgreSQL manifests to the private version, add `sqltsSourceCommit`, and change the runtime's engine peer versions to match before `npm pack --ignore-scripts`.
-
-Never update the runtime, toolchain bundle, or browser WASM independently. Rebuild packages, record their hashes, update both lockfiles, and run the native and browser integration suites. Decoder changes in this revision include vectors as number arrays, hstore as objects, and intervals in the upstream duration format.
+Upgrading from the private 0.5.0-sqlts.c8a03f9 build to 0.6.0 changed no runtime or tooling files;
+only `engine.wasm` differs (upstream #126: views now carry their tables' keys for the row-count
+proof).

@@ -1,9 +1,8 @@
-import { mkdir, mkdtemp, readFile, writeFile, readdir, chmod, cp } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile, readdir, chmod } from "node:fs/promises";
 import { writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import ts from "typescript-ast";
 const root = resolve(import.meta.dir, "..");
-const revision = JSON.parse(await readFile(resolve(root, "vendor/reylo/revision.json"), "utf8"));
 const base = resolve(root, "work/packages");
 await mkdir(base, { recursive: true });
 const stage = await mkdtemp(resolve(base, "sqlts-"));
@@ -111,10 +110,9 @@ await writeFile(
         "typescript-ast": "npm:typescript@5.9.3",
         pg: "8.23.1",
       },
-      sqltsReyloCommit: revision.commit,
       peerDependencies: {
-        reylo: revision.version,
-        "@reylosql/postgres": revision.version,
+        reylo: "~0.6.0",
+        "@reylosql/postgres": "~0.6.0",
         typescript: "7.1.0-beta",
         esbuild: ">=0.25.0",
         vite: "^8.0.0",
@@ -149,12 +147,5 @@ const [code, out, err] = await Promise.all([
 ]);
 if (code) throw Error(err);
 const packed = JSON.parse(out) as { filename: string }[];
-const companions: Record<string, string> = {};
-for (const [name, record] of Object.entries(revision.packages) as [string, { file: string }][]) {
-  const path = resolve(base, record.file);
-  await cp(resolve(root, "vendor/reylo", record.file), path);
-  companions[name] = path;
-}
-console.log(
-  JSON.stringify({ directory: stage, tarball: resolve(base, packed[0]!.filename), companions }),
-);
+// Reylo comes from npm (peer dependencies above); there are no companion tarballs.
+console.log(JSON.stringify({ directory: stage, tarball: resolve(base, packed[0]!.filename) }));
