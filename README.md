@@ -8,7 +8,8 @@ Reylo adapter and its lexical helpers, under `src/adapter`.
 ## Try it
 
 ```sh
-cd /Users/matt/src/sandbox/reylo-inline-sql
+git clone https://github.com/babsonmatt/sqlts.git
+cd sqlts
 # Requires Bun 1.4.4 or newer.
 bun install --frozen-lockfile
 # Set DATABASE_URL in .env when setting up another machine.
