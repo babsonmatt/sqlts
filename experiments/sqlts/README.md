@@ -355,7 +355,8 @@ file-watch forwarding retain the fingerprint safeguard and need an explicit rech
 For agents and CI, a fresh SQL-aware check reads saved dependencies directly and fails
 on invalid shared SQL or incompatible inferred types. No editor, restart, generation,
 or watcher event is required. Use `bun run sqlts:check:all` for this checkout's configured
-examples, or `sqlts check -p tsconfig.json` from the installed `@sqlts/core` package. Bun's built-in
+examples, or `tsc --noEmit --runExternalCode -p tsconfig.json` in a project with `@sqlts/core` installed
+(`sqlts check -p tsconfig.json` is the same check as a shortcut). Bun's built-in
 checker alone does not execute content mappers; the SQL-aware scripts invoke the
 mapper-enabled TypeScript compiler through Node. Checks cover their configured project,
 not every arbitrary file elsewhere in the repository.

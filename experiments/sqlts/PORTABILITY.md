@@ -28,11 +28,16 @@ and callers in the actual tsconfig. Load the development DATABASE_URL using the 
 usual environment configuration. Then:
 
 ```
-node node_modules/@sqlts/core/src/sqlts/cli.js check -p tsconfig.json
+npx tsc --noEmit --runExternalCode -p tsconfig.json
 node --import @sqlts/core/register app.ts
 # or
 bun --preload @sqlts/core/register app.ts
 ```
+
+The check is the project's own TypeScript 7.1 beta `tsc`. `--runExternalCode` lets it run the
+content mapper; TypeScript accepts that flag only on the command line, not in tsconfig.json.
+`npx sqlts check -p tsconfig.json` is an optional shortcut that adds `--noEmit` and
+`--runExternalCode` for you.
 
 Checking and loader-based execution analyze SQL against the development database.
 Analysis runs at module loading, not for every request. No generated source directory is
@@ -41,21 +46,21 @@ checks still apply to executed queries.
 
 ## Optional `bun check` shortcut
 
-In an application with the private SQLTS package installed, merge these scripts into
+In an application with `@sqlts/core` installed, merge these scripts into
 its `package.json` (preserving any existing checks):
 
 ```json
 {
   "scripts": {
-    "check:sql": "sqlts check -p tsconfig.json",
+    "check:sql": "tsc --noEmit --runExternalCode -p tsconfig.json",
     "check": "bun run check:sql"
   }
 }
 ```
 
 Run `bun check` or `bun run check`. On the tested Bun 1.4.4, both invoke the project
-script. The installed SQLTS CLI runs the native TypeScript compiler with `--noEmit`
-and `--runExternalCode`; SQL errors, argument errors, result-property errors, and
+script, which runs the native TypeScript compiler with `--noEmit` and
+`--runExternalCode`; SQL errors, argument errors, result-property errors, and
 saved shared-fragment errors fail the command with a nonzero exit status.
 No separate generation command is required. Database configuration and the
 mapper-enabled tsconfig are still required; use the application's existing environment

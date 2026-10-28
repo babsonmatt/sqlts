@@ -8,7 +8,7 @@ The checkout links `@sqlts/core` through its Bun workspace at `experiments/sqlts
 
 The verified compiler is the checkout's `typescript@7.1.0-beta`, with Reylo `0.6.x`; use the pinned toolchain rather than a global compiler or an untested upgrade. Node and Bun run this workflow, but Bun's built-in checker does not run content mappers on this toolchain.
 
-For a separate repository, install `@sqlts/core` from npm with `reylo@0.6` and `@reylosql/postgres@0.6`, or run `bun run sqlts:pack` in this checkout and install the exact local tarball it prints to test unreleased changes. Copying just `experiments/sqlts/plugin` is insufficient. Install `typescript@7.1.0-beta`, the app's driver and Node/driver type packages. See `experiments/sqlts/PORTABILITY.md`. The package's `sqlts check -p tsconfig.json` CLI enables the native mapper. Preserve existing project settings and credentials.
+For a separate repository, install `@sqlts/core` from npm with `reylo@0.6` and `@reylosql/postgres@0.6`, or run `bun run sqlts:pack` in this checkout and install the exact local tarball it prints to test unreleased changes. Copying just `experiments/sqlts/plugin` is insufficient. Install `typescript@7.1.0-beta`, the app's driver and Node/driver type packages. See `experiments/sqlts/PORTABILITY.md`. Check with the project's `tsc --noEmit --runExternalCode -p tsconfig.json` (the flag is command-line only); `sqlts check -p tsconfig.json` is an equivalent shortcut. Preserve existing project settings and credentials.
 
 ## 2. Mapper-enabled TypeScript project
 
@@ -85,7 +85,7 @@ The no-generation development loader analyzes at module load. For production, fi
 then run `bun node_modules/@sqlts/core/src/sqlts/cli.js build app.ts dist/app.mjs`.
 The checkout equivalent is `bun run sqlts:build app.ts dist/app.mjs`. The bundler needs Bun
 and the development database, but the emitted module runs on Node/Bun with only the
-application's runtime dependencies (including `reylo@0.5.0` and its driver). SQLTS, the
+application's runtime dependencies (including `reylo@0.6` and its driver). SQLTS, the
 compiler and the SQL analyzer are not required there. Query execution still needs the
 production database; Reylo's periodic schema checks remain active.
 
