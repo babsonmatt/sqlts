@@ -83,7 +83,7 @@ await writeFile(
   JSON.stringify(
     {
       name: "@sqlts/core",
-      version: "0.1.0",
+      version: "0.1.1",
       description:
         "Write PostgreSQL in TypeScript and keep inferred types, with SQL-aware checking.",
       keywords: ["sql", "postgres", "postgresql", "typescript", "types", "query", "reylo"],
