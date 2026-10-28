@@ -14,7 +14,7 @@ afterAll(() => rm(dir, { recursive: true, force: true }));
 const file = resolve(dir, "queries.sqlts"),
   helper = resolve(dir, "fragments.sqlts"),
   caller = resolve(dir, "caller.ts");
-const fragments = `import {sql} from "reylo-sqlts-experiment";
+const fragments = `import {sql} from "@sqlts/core";
 const fallback=10;
 let mutableFallback=99;
 function forbidden():number {throw Error("Preview must not execute defaults");}
@@ -28,7 +28,7 @@ export function pattern(value="Alice"){const pattern=\`%\${value}%\`;return sql.
 export function mutate(flag:boolean){const ignored=(()=>{for(flag of [false]){}})();return sql.fragment\`\${flag ? sql.fragment\`email IS NOT NULL\` : sql.empty}\`;}
 export function nested(orgId?:number){return tenant(orgId);}
 `;
-const source = `import {sql} from "reylo-sqlts-experiment";
+const source = `import {sql} from "@sqlts/core";
 import {tenant,dynamicTenant,unknownTenant,pair,textValue,boolValue,pattern,mutate,nested} from "./fragments.sqlts";
 type GlobalOrg=number;
 export function clean(flag:boolean){return sql\`SELECT email FROM reylo_inline_demo.users \${sql.where(flag && sql\`email IS NOT NULL\`)} ORDER BY id\`;}
@@ -93,7 +93,7 @@ const config = {
     noUncheckedIndexedAccess: true,
     types: ["node"],
   },
-  contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+  contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
   files: ["queries.sqlts", "fragments.sqlts", "caller.ts"],
 };
 await writeFile(resolve(dir, "tsconfig.json"), JSON.stringify(config));
@@ -200,8 +200,8 @@ test("runtime rows and scalar bindings agree with the fixed checks on Node and B
  }finally{await db.end();}`,
   );
   for (const args of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const result = await run(args);
     expect(result.code, result.output).toBe(0);
@@ -273,6 +273,6 @@ test("binding provenance preserves runtime output and differentiates different d
     await handlers.closeProject({ projectHandle });
     await tooling.releaseConnections();
   }
-  const different = `import {sql} from "reylo-sqlts-experiment";function a(v=10){return sql.fragment\`\${v}::int AS id\`;}function b(v=20){return sql.fragment\`\${v}::int AS id\`;}export function q(flag:boolean){return sql\`SELECT \${flag?a(undefined):b(undefined)}\`;}`;
+  const different = `import {sql} from "@sqlts/core";function a(v=10){return sql.fragment\`\${v}::int AS id\`;}function b(v=20){return sql.fragment\`\${v}::int AS id\`;}export function q(flag:boolean){return sql\`SELECT \${flag?a(undefined):b(undefined)}\`;}`;
   expect(prepare(different, file).queries[0]!.variants).toHaveLength(2);
 });

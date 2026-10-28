@@ -22,7 +22,7 @@ function decode(source: string, data: number[]) {
   return out;
 }
 const source =
-  '// 🎉\r\nimport {sql as q} from "reylo-sqlts-experiment";\r\n' +
+  '// 🎉\r\nimport {sql as q} from "@sqlts/core";\r\n' +
   "export function users(orgId:number,search?:string) { return q`\n" +
   "SELECT u.id FROM users u\n" +
   "WHERE u.org_id = ${orgId}\nORDER BY u.id\nLIMIT ${20}`; }\n" +
@@ -61,7 +61,7 @@ test("&& fragments retain SQL colors and leave guard expressions as JavaScript",
 test("highlighting stays tolerant while the authoritative mapper stays strict", () => {
   const service = new SqltsSemanticTokens();
   const unfinished =
-    'import {sql} from "reylo-sqlts-experiment"; sql`SELECT u.id FROM users u WHERE u.id = ${id} ORDER BY u.id';
+    'import {sql} from "@sqlts/core"; sql`SELECT u.id FROM users u WHERE u.id = ${id} ORDER BY u.id';
   const colors = decode(unfinished, service.full(unfinished, "/example.sqlts").data);
   expect(colors.some((t) => t.text === "ORDER" && t.type === "keyword")).toBe(true);
   expect(() => prepare(unfinished, "/example.sqlts")).toThrow();
@@ -77,7 +77,7 @@ test("sqlts coloring ignores unrelated and shadowed tags and clears unsupported 
   const service = new SqltsSemanticTokens();
   for (const text of [
     'import {sql} from "other"; sql`SELECT 1`;',
-    'import {sql} from "reylo-sqlts-experiment"; function f(sql:any) {return sql`SELECT 1`}',
+    'import {sql} from "@sqlts/core"; function f(sql:any) {return sql`SELECT 1`}',
   ])
     expect(service.full(text, "/example.sqlts").data).toEqual([]);
   expect(service.full(source, "/example.ts").data).toEqual([]);
@@ -167,7 +167,7 @@ test("mutation templates retain SQL colors across shared calls and conditional a
 
 test("standalone shared fragments and queries beyond the analysis shape budget still color lexically", () => {
   const text =
-    'import {sql} from "reylo-sqlts-experiment";export const piece=sql.fragment`email IS NOT NULL`;export const query=sql`SELECT id FROM users ${sql.where(' +
+    'import {sql} from "@sqlts/core";export const piece=sql.fragment`email IS NOT NULL`;export const query=sql`SELECT id FROM users ${sql.where(' +
     Array.from({ length: 10 }, (_, i) => `flags[${i}] && sql\`id > \${${i}}\``).join(",") +
     ")} ORDER BY id RETURNING id`;";
   const tokens = decode(text, new SqltsSemanticTokens().full(text, "/example.sqlts").data);

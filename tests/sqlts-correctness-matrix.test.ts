@@ -156,7 +156,7 @@ test("conditional matrix checks inferred types and previews against PostgreSQL o
     )
     .join("\n");
   const source =
-    'import {sql} from "reylo-sqlts-experiment";import {nested} from "./helpers.sqlts";\n' +
+    'import {sql} from "@sqlts/core";import {nested} from "./helpers.sqlts";\n' +
     ordinary +
     `
  export function shared(flag:boolean){return sql\`SELECT id,email FROM reylo_inline_demo.users \${sql.where(nested(flag))} ORDER BY id\`;}
@@ -211,7 +211,7 @@ test("conditional matrix checks inferred types and previews against PostgreSQL o
   );
   await writeFile(
     resolve(dir, "leaf.sqlts"),
-    'import {sql} from "reylo-sqlts-experiment";export function inner(flag=true){const local=flag;return sql.fragment`${local?sql.fragment`email IS NOT NULL`:sql.empty}`;}',
+    'import {sql} from "@sqlts/core";export function inner(flag=true){const local=flag;return sql.fragment`${local?sql.fragment`email IS NOT NULL`:sql.empty}`;}',
   );
   await writeFile(caller, consumer);
 
@@ -229,7 +229,7 @@ test("conditional matrix checks inferred types and previews against PostgreSQL o
         noUncheckedIndexedAccess: true,
         types: ["node"],
       },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       files: ["caller.ts"],
     }),
   );
@@ -267,10 +267,10 @@ test("conditional matrix checks inferred types and previews against PostgreSQL o
         Bun.which("node")!,
         "--env-file=.env",
         "--import",
-        "reylo-sqlts-experiment/register",
+        "@sqlts/core/register",
         runner,
       ],
-      [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+      [process.execPath, "--preload", "@sqlts/core/register", runner],
     ]) {
       const results = JSON.parse(await run(command)) as {
         compiled: { text: string; values: unknown[] };

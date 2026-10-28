@@ -5,7 +5,7 @@ These examples use the `.sqlts` API and the repository's demo schema. Use the ta
 ## One WHERE, required organization, optional grouped search
 
 ```ts
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 export function findUsers(orgId: number, search?: string, minId?: number, onlyWithEmail = false) {
   return sql`

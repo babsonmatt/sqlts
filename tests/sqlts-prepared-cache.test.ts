@@ -15,13 +15,13 @@ test("preparation reuse tracks transitive helper contents, errors and unrelated 
   const leaf = resolve(dir, "leaf.sqlts"),
     mid = resolve(dir, "mid.sqlts");
   const query =
-    'import {sql} from "reylo-sqlts-experiment";import {columns} from "./mid.sqlts";export const q=()=>sql`SELECT ${columns()} FROM reylo_inline_demo.users`;';
+    'import {sql} from "@sqlts/core";import {columns} from "./mid.sqlts";export const q=()=>sql`SELECT ${columns()} FROM reylo_inline_demo.users`;';
   const unrelated =
-    'import {sql} from "reylo-sqlts-experiment";export const q=()=>sql`SELECT id FROM reylo_inline_demo.users`;';
+    'import {sql} from "@sqlts/core";export const q=()=>sql`SELECT id FROM reylo_inline_demo.users`;';
   try {
     await writeFile(
       leaf,
-      'import {sql} from "reylo-sqlts-experiment";export const columns=()=>sql.fragment`id,email`;',
+      'import {sql} from "@sqlts/core";export const columns=()=>sql.fragment`id,email`;',
     );
     await writeFile(
       mid,
@@ -32,7 +32,7 @@ test("preparation reuse tracks transitive helper contents, errors and unrelated 
     expect(prepareCached(query, resolve(dir, "query.sqlts"))).toBe(a);
     await writeFile(
       leaf,
-      'import {sql} from "reylo-sqlts-experiment";export const columns=()=>sql.fragment`id,name`;',
+      'import {sql} from "@sqlts/core";export const columns=()=>sql.fragment`id,name`;',
     );
     expect(prepareCached(query, resolve(dir, "query.sqlts"))).not.toBe(a);
     expect(prepareCached(unrelated, resolve(dir, "other.sqlts"))).toBe(b);
@@ -40,7 +40,7 @@ test("preparation reuse tracks transitive helper contents, errors and unrelated 
     expect(() => prepareCached(query, resolve(dir, "query.sqlts"))).toThrow();
     await writeFile(
       leaf,
-      'import {sql} from "reylo-sqlts-experiment";export const columns=()=>sql.fragment`id,email`;',
+      'import {sql} from "@sqlts/core";export const columns=()=>sql.fragment`id,email`;',
     );
     expect(prepareCached(query, resolve(dir, "query.sqlts")).queries).toEqual(a.queries);
     expect(prepareCached(unrelated + "\n", resolve(dir, "other.sqlts"))).not.toBe(b);
@@ -60,7 +60,7 @@ test("a preparation cache hit still validates SQL/schema and preserves emitted t
   const config = resolve(dir, "tsconfig.json"),
     file = resolve(dir, "query.sqlts"),
     content =
-      'import {sql} from "reylo-sqlts-experiment";export const q=()=>sql`SELECT id,email FROM reylo_inline_demo.users`;';
+      'import {sql} from "@sqlts/core";export const q=()=>sql`SELECT id,email FROM reylo_inline_demo.users`;';
   await writeFile(config, JSON.stringify({ compilerOptions: { strict: true } }));
   clearPreparationCache();
   resetAnalysisStats();

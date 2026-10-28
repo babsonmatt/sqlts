@@ -89,7 +89,7 @@ main README for the bounded parser's remaining scope limitations.
 
 ## SQLTS queries
 
-The same server now supports `.sqlts` queries importing `reylo-sqlts-experiment`:
+The same server now supports `.sqlts` queries importing `@sqlts/core`:
 SQL table/column/function completion, scope-aware suggestions in nested fragments,
 and semantic coloring. Native TypeScript 7 with the configured content mapper handles
 inferred types, query hovers, and SQL diagnostics. The preview server skips its named-query

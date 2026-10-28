@@ -11,7 +11,7 @@ for (const item of await readdir("experiments", { withFileTypes: true })) {
   } catch {
     continue;
   }
-  if (!config.contentMappers?.some((m) => m.package === "reylo-sqlts-experiment")) continue;
+  if (!config.contentMappers?.some((m) => m.package === "@sqlts/core")) continue;
   console.log(`SQLTS checking ${item.name}`);
   const p = Bun.spawn(
     ["node", "node_modules/typescript/bin/tsc", "--noEmit", "--runExternalCode", "-p", file],

@@ -70,7 +70,7 @@ export function expandFragments(
     const m = d.parent.parent.parent.moduleSpecifier;
     return (
       ts.isStringLiteral(m) &&
-      (m.text === "reylo-sqlts-experiment" || /(?:^|\/)\.inline\/sql(?:\.[jt]s)?$/.test(m.text))
+      (m.text === "@sqlts/core" || /(?:^|\/)\.inline\/sql(?:\.[jt]s)?$/.test(m.text))
     );
   };
   const method = (node: ts.Node, ctx: Context, names: string[]) =>

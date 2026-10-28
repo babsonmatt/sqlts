@@ -1,20 +1,23 @@
 # Local installation and deployment
 
-Nothing is published. `bun run sqlts:pack` builds a private `0.0.3` tarball under
-`work/packages/`. The tarball includes JavaScript implementation files and declarations;
-it does not refer back to this checkout. Node does not need to execute TypeScript from
-inside `node_modules`.
+SQLTS is published to npm as `@sqlts/core`. To test an unreleased change, `bun run sqlts:pack`
+builds the same package as a tarball under `work/packages/`. The package includes JavaScript
+implementation files and declarations; it does not refer back to this checkout. Node does not need
+to execute TypeScript from inside `node_modules`.
 
 ## Another project
 
-Install the SQLTS tarball printed by `sqlts:pack` with the project's package manager, together with
-`reylo@0.6` and `@reylosql/postgres@0.6` from npm, `typescript@7.1.0-beta`, the application's driver
-(`pg` in our tests), and its normal Node/driver type packages:
+Install `@sqlts/core` with the project's package manager, together with `reylo@0.6` and
+`@reylosql/postgres@0.6`, `typescript@7.1.0-beta`, the application's driver (`pg` in our tests), and
+its normal Node/driver type packages:
 
 ```sh
-npm install /path/reylo-sqlts-experiment-0.0.3.tgz reylo@0.6 @reylosql/postgres@0.6 pg
+npm install @sqlts/core reylo@0.6 @reylosql/postgres@0.6 pg
 npm install -D typescript@7.1.0-beta @types/node @types/pg
 ```
+
+To try a local build instead, install the tarball printed by `bun run sqlts:pack` in place of
+`@sqlts/core`.
 
 SQLTS uses Reylo internals and accepts only Reylo 0.6.x; both Reylo packages must be the same
 version. The analyzer is a WebAssembly artifact shipped by `@reylosql/postgres`; installing these
@@ -25,10 +28,10 @@ and callers in the actual tsconfig. Load the development DATABASE_URL using the 
 usual environment configuration. Then:
 
 ```
-node node_modules/reylo-sqlts-experiment/src/sqlts/cli.js check -p tsconfig.json
-node --import reylo-sqlts-experiment/register app.ts
+node node_modules/@sqlts/core/src/sqlts/cli.js check -p tsconfig.json
+node --import @sqlts/core/register app.ts
 # or
-bun --preload reylo-sqlts-experiment/register app.ts
+bun --preload @sqlts/core/register app.ts
 ```
 
 Checking and loader-based execution analyze SQL against the development database.
@@ -44,7 +47,7 @@ its `package.json` (preserving any existing checks):
 ```json
 {
   "scripts": {
-    "check:sql": "reylo-sqlts check -p tsconfig.json",
+    "check:sql": "sqlts check -p tsconfig.json",
     "check": "bun run check:sql"
   }
 }
@@ -72,7 +75,7 @@ Keep the loader workflow for development. For deployment, first run the SQL-awar
 then build with Bun using a database containing the intended schema:
 
 ```
-bun node_modules/reylo-sqlts-experiment/src/sqlts/cli.js build app.ts dist/app.mjs
+bun node_modules/@sqlts/core/src/sqlts/cli.js build app.ts dist/app.mjs
 node dist/app.mjs
 ```
 
@@ -114,7 +117,7 @@ editor does not run the application's preload hooks. Its workers read the config
 development database without importing application code. A tested command is:
 
 ```sh
-node node_modules/reylo-sqlts-experiment/src/sqlts/preview-cli.js --project /absolute/path/to/application
+node node_modules/@sqlts/core/src/sqlts/preview-cli.js --project /absolute/path/to/application
 ```
 
 For Zed, merge equivalent binary overrides into the existing registered servers:
@@ -144,7 +147,7 @@ do not install an extension or replace the rest of the user's Zed settings.
 ## Schema changes and migration tools
 
 SQLTS works with SQL migration runners such as dbmate. After applying schema changes,
-run `reylo-sqlts refresh-schema --project /path/to/application`, then a fresh SQL-aware
+run `sqlts refresh-schema --project /path/to/application`, then a fresh SQL-aware
 check. The refresh command performs no DDL; it writes an ignored revision signal watched
 by both editor services. It reloads completion metadata and replaces the native mapper's
 analysis worker to discard stale in-memory schema information. It does not delete Reylo's
@@ -159,14 +162,14 @@ The isolated checkout demo is documented in `experiments/dbmate/README.md`.
 
 ## Vite SSR and esbuild
 
-The SQLTS package exports `reylo-sqlts-experiment/vite` and
-`reylo-sqlts-experiment/esbuild`. Both are default plugin factories. Install your
+The SQLTS package exports `@sqlts/core/vite` and
+`@sqlts/core/esbuild`. Both are default plugin factories. Install your
 bundler separately; it is an optional peer dependency.
 
 ```ts
 // vite.config.ts — Vite 8 server/SSR code only
 import { defineConfig } from "vite";
-import sqlts from "reylo-sqlts-experiment/vite";
+import sqlts from "@sqlts/core/vite";
 export default defineConfig({ plugins: [sqlts()] });
 ```
 
@@ -176,7 +179,7 @@ PGlite browser playground.
 
 ```ts
 import { build } from "esbuild";
-import sqlts from "reylo-sqlts-experiment/esbuild";
+import sqlts from "@sqlts/core/esbuild";
 await build({
   entryPoints: ["src/app.ts"], outfile: "dist/app.mjs",
   bundle: true, platform: "node", format: "esm", packages: "external",

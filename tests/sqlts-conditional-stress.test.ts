@@ -115,18 +115,18 @@ export function unannotated(a=false,b=a){return sql\`SELECT id,email FROM reylo_
     callerFile = resolve(dir, "caller.ts");
   await writeFile(
     resolve(dir, "helpers.sqlts"),
-    'import {sql} from "reylo-sqlts-experiment";\n' + helpers.join("\n"),
+    'import {sql} from "@sqlts/core";\n' + helpers.join("\n"),
   );
   await writeFile(
     queryFile,
-    'import {sql} from "reylo-sqlts-experiment";import {' +
+    'import {sql} from "@sqlts/core";import {' +
       sharedNames.join(",") +
       '} from "./helpers.sqlts";\n' +
       functions.join("\n"),
   );
   await writeFile(
     resolve(dir, "edges.sqlts"),
-    'import {sql} from "reylo-sqlts-experiment";\n' + edgeFunctions,
+    'import {sql} from "@sqlts/core";\n' + edgeFunctions,
   );
   const names = new Set(functions.map((f) => /export function (\w+)/.exec(f)![1]));
   const invoke = (c: (typeof callCases)[number]) =>
@@ -159,7 +159,7 @@ export function unannotated(a=false,b=a){return sql\`SELECT id,email FROM reylo_
         allowImportingTsExtensions: true,
         noUncheckedIndexedAccess: true,
       },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       files: ["caller.ts"],
     }),
   );
@@ -198,10 +198,10 @@ export function unannotated(a=false,b=a){return sql\`SELECT id,email FROM reylo_
         Bun.which("node")!,
         "--env-file=.env",
         "--import",
-        "reylo-sqlts-experiment/register",
+        "@sqlts/core/register",
         runner,
       ],
-      [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+      [process.execPath, "--preload", "@sqlts/core/register", runner],
     ]) {
       const results = JSON.parse(await run(command)) as {
         compiled: { text: string };

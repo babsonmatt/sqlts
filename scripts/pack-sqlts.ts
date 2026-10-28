@@ -82,9 +82,14 @@ await writeFile(
   resolve(stage, "package.json"),
   JSON.stringify(
     {
-      name: "reylo-sqlts-experiment",
-      version: "0.0.3",
-      private: true,
+      name: "@sqlts/core",
+      version: "0.1.0",
+      description:
+        "Write PostgreSQL in TypeScript and keep inferred types, with SQL-aware checking.",
+      keywords: ["sql", "postgres", "postgresql", "typescript", "types", "query", "reylo"],
+      homepage: "https://sqlts.dev",
+      license: "MIT",
+      publishConfig: { access: "public" },
       type: "module",
       exports: {
         ".": { types: "./tag.d.ts", default: "./tag.js" },
@@ -95,9 +100,10 @@ await writeFile(
         "./tracing": { types: "./src/tracing.d.ts", default: "./src/tracing.js" },
         "./runtime": { types: "./src/runtime.d.ts", default: "./src/runtime.js" },
       },
+      // npm publish rejects bin paths with a leading "./".
       bin: {
-        "reylo-sqlts": "./src/sqlts/cli.js",
-        "reylo-inline-preview": "./src/sqlts/preview-cli.js",
+        sqlts: "src/sqlts/cli.js",
+        "reylo-inline-preview": "src/sqlts/preview-cli.js",
       },
       typescript: {
         contentMapper: {
@@ -131,6 +137,12 @@ await writeFile(
 await writeFile(
   resolve(stage, "PORTABILITY.md"),
   await readFile(resolve(root, "experiments/sqlts/PORTABILITY.md"), "utf8"),
+);
+await writeFile(resolve(stage, "LICENSE"), await readFile(resolve(root, "LICENSE"), "utf8"));
+// Some packaged files are copied from Reylo (see vendor/reylo/README.md); keep its license with them.
+await writeFile(
+  resolve(stage, "LICENSE-reylo"),
+  await readFile(resolve(root, "vendor/reylo/LICENSE"), "utf8"),
 );
 await chmod(resolve(stage, "src/sqlts/cli.js"), 0o755);
 await chmod(resolve(stage, "scripts/preview-server.js"), 0o755);

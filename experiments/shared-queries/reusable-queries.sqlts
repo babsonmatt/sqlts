@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 import { inOrganization } from "./fragments.sqlts";
 import { requireEmail, contactProjection } from "./reusable-fragments.sqlts";
 

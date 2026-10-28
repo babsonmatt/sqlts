@@ -4,15 +4,15 @@ Use this for the current prototype, not as a published-package installation guid
 
 ## 1. Package and compiler
 
-The checkout links `reylo-sqlts-experiment` through its Bun workspace at `experiments/sqlts/plugin`. If dependencies are missing and setup is requested, install from the checkout root with its existing lockfile (`bun install --frozen-lockfile`). Do not reinstall for an ordinary query edit.
+The checkout links `@sqlts/core` through its Bun workspace at `experiments/sqlts/plugin`. If dependencies are missing and setup is requested, install from the checkout root with its existing lockfile (`bun install --frozen-lockfile`). Do not reinstall for an ordinary query edit.
 
-The verified compiler is the checkout's `typescript@7.1.0-beta`, with Reylo `0.5.0`; use the pinned toolchain rather than a global compiler or an untested upgrade. Node and Bun run this workflow, but Bun's built-in checker does not run content mappers on this toolchain.
+The verified compiler is the checkout's `typescript@7.1.0-beta`, with Reylo `0.6.x`; use the pinned toolchain rather than a global compiler or an untested upgrade. Node and Bun run this workflow, but Bun's built-in checker does not run content mappers on this toolchain.
 
-For a separate repository, run `bun run sqlts:pack` in this checkout and install the exact local tarball it prints. It includes JavaScript implementation and declaration files without a checkout dependency; copying just `experiments/sqlts/plugin` is still insufficient. Install `typescript@7.1.0-beta`, the app's driver and Node/driver type packages. Nothing is published. See `experiments/sqlts/PORTABILITY.md`; verify the installed package rather than assuming a registry release exists. The package's `reylo-sqlts check -p tsconfig.json` CLI enables the native mapper. Preserve existing project settings and credentials.
+For a separate repository, install `@sqlts/core` from npm with `reylo@0.6` and `@reylosql/postgres@0.6`, or run `bun run sqlts:pack` in this checkout and install the exact local tarball it prints to test unreleased changes. Copying just `experiments/sqlts/plugin` is insufficient. Install `typescript@7.1.0-beta`, the app's driver and Node/driver type packages. See `experiments/sqlts/PORTABILITY.md`. The package's `sqlts check -p tsconfig.json` CLI enables the native mapper. Preserve existing project settings and credentials.
 
 ## 2. Mapper-enabled TypeScript project
 
-Write queries in `.sqlts`, importing `{ sql }` directly from `reylo-sqlts-experiment`. Ordinary `.ts` callers import those query files. A minimal isolated tsconfig for adjacent `queries.sqlts` and `consumer.ts` is:
+Write queries in `.sqlts`, importing `{ sql }` directly from `@sqlts/core`. Ordinary `.ts` callers import those query files. A minimal isolated tsconfig for adjacent `queries.sqlts` and `consumer.ts` is:
 
 ```json
 {
@@ -27,7 +27,7 @@ Write queries in `.sqlts`, importing `{ sql }` directly from `reylo-sqlts-experi
     "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": true
   },
-  "contentMappers": [{ "package": "reylo-sqlts-experiment", "extensions": [".sqlts"] }],
+  "contentMappers": [{ "package": "@sqlts/core", "extensions": [".sqlts"] }],
   "files": ["queries.sqlts", "consumer.ts"]
 }
 ```
@@ -46,7 +46,7 @@ node --env-file=.env node_modules/typescript/bin/tsc --noEmit --runExternalCode 
 
 For a new project, make its check script select its actual tsconfig. `--runExternalCode` enables execution of the configured mapper; use the project's known local mapper. `.env` is an example of the existing checkout's environment loading, not a requirement to create or copy secrets into new directories. Root `bun check` now includes `sqlts:check:all`, which discovers mapper-enabled tsconfigs directly under `experiments/`. `sqlts:check` still targets the original SQLTS demo. A separate project needs its own check script selecting its real files.
 
-Node execution uses `--import reylo-sqlts-experiment/register`; Bun uses `--preload reylo-sqlts-experiment/register`. The existing `sqlts:demo` and `sqlts:demo:bun` scripts show full commands. Adapt the entrypoint and environment loading to the application. `.run(db)` executes the query; no explicit `.compile()` or generation command is required.
+Node execution uses `--import @sqlts/core/register`; Bun uses `--preload @sqlts/core/register`. The existing `sqlts:demo` and `sqlts:demo:bun` scripts show full commands. Adapt the entrypoint and environment loading to the application. `.run(db)` executes the query; no explicit `.compile()` or generation command is required.
 
 ## 4. Zed, when used
 
@@ -82,7 +82,7 @@ Use a small query against an existing development table and an ordinary TypeScri
 ## Optional production deployment
 
 The no-generation development loader analyzes at module load. For production, first typecheck,
-then run `bun node_modules/reylo-sqlts-experiment/src/sqlts/cli.js build app.ts dist/app.mjs`.
+then run `bun node_modules/@sqlts/core/src/sqlts/cli.js build app.ts dist/app.mjs`.
 The checkout equivalent is `bun run sqlts:build app.ts dist/app.mjs`. The bundler needs Bun
 and the development database, but the emitted module runs on Node/Bun with only the
 application's runtime dependencies (including `reylo@0.5.0` and its driver). SQLTS, the
@@ -94,8 +94,8 @@ replace typechecking. Source-mapped runtime stacks and Cloudflare adapters remai
 The package does not automatically install the Zed extension; distinguish portable CLI/LSP
 tests from a graphical editor setup test.
 
-The private package's `reylo-inline-preview` command is a Node launcher for Bun. Use
-that command (or `node node_modules/reylo-sqlts-experiment/src/sqlts/preview-cli.js`)
+The package's `reylo-inline-preview` command is a Node launcher for Bun. Use
+that command (or `node node_modules/@sqlts/core/src/sqlts/preview-cli.js`)
 with `--project /absolute/path/to/application`; it supplies the packaged isolated Bun
 configuration and workers. Do not launch its internal preview-server.js directly:
 that can inherit application preload hooks. The existing checkout extension already

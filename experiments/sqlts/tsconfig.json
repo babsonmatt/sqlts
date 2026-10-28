@@ -10,7 +10,7 @@
     "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": true
   },
-  "contentMappers": [{ "package": "reylo-sqlts-experiment", "extensions": [".sqlts"] }],
+  "contentMappers": [{ "package": "@sqlts/core", "extensions": [".sqlts"] }],
   "include": ["*.ts", "*.sqlts"],
   "exclude": ["plugin"]
 }

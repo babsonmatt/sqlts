@@ -6,7 +6,7 @@ Write complete queries as `sql` templates. Inside a query or the `sql.where`,
 `sql.fragment` remains the explicit spelling and can be mixed with the shorthand:
 
 ```ts
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 export function findUsers(orgId: number, search?: string) {
   return sql`
@@ -87,10 +87,10 @@ workspace package and the usual `DATABASE_URL` / fixture setup:
 node --env-file=.env node_modules/typescript/bin/tsc --noEmit --runExternalCode -p experiments/sqlts/tsconfig.json
 
 # Direct Node execution: the loader handles .sqlts imports in memory.
-node --env-file=.env --import reylo-sqlts-experiment/register experiments/sqlts/demo.ts
+node --env-file=.env --import @sqlts/core/register experiments/sqlts/demo.ts
 
 # Direct Bun execution: the preload registers the .sqlts loader.
-bun --preload reylo-sqlts-experiment/register experiments/sqlts/demo.ts
+bun --preload @sqlts/core/register experiments/sqlts/demo.ts
 ```
 
 The root scripts `sqlts:check`, `sqlts:demo`, and `sqlts:demo:bun` are shortcuts for
@@ -192,7 +192,7 @@ Mapper-generated helper names can appear in native query-tag hover signatures.
   schema freshness. Shared expansion is bounded to 64 files, depth 32, 2048 expansions and
   1 MB of replacements per source file. Combined per-file SQL source maps are limited
   to two million UTF-16 mapping positions before allocating those maps.
-- Import `{ sql }` (optionally aliased) directly from `reylo-sqlts-experiment` in a
+- Import `{ sql }` (optionally aliased) directly from `@sqlts/core` in a
   `.sqlts` file. Plain `.ts` use deliberately fails instead of returning `any`.
 - The loader strips TypeScript; it does not replace type checking. Run the native
   checker to reject TypeScript errors, as you would for ordinary application code.
@@ -203,8 +203,8 @@ Mapper-generated helper names can appear in native query-tag hover signatures.
   types; arbitrary external DDL is not automatically observed. See `PORTABILITY.md`.
 - Runtime exception stacks are not source-mapped through the in-memory transform
   yet; checker and language-server positions are mapped and tested.
-- The workspace plugin delegates to `src/sqlts`; `sqlts:pack` creates a standalone private
-  tarball for other projects. Nothing is published. Node's loader times out after 30 s.
+- The workspace plugin delegates to `src/sqlts`; `sqlts:pack` creates the standalone
+  `@sqlts/core` tarball that is published to npm. Node's loader times out after 30 s.
 - Shared dependency SQL is read from saved files. Fingerprint checks reject stale
   consumer analysis after unsaved dependency edits; save and recheck/restart the language
   server to refresh it. Shared SQL errors map to the consumer call site.
@@ -315,7 +315,7 @@ Open `experiments/user-search/narrowing.ts` and hover `requiredEmail`, `optional
 `conditionalEmail`. Run it from the repository root with:
 
 ```sh
-bun --preload reylo-sqlts-experiment/register experiments/user-search/narrowing.ts
+bun --preload @sqlts/core/register experiments/user-search/narrowing.ts
 bun run sqlts:check:all
 ```
 
@@ -355,7 +355,7 @@ file-watch forwarding retain the fingerprint safeguard and need an explicit rech
 For agents and CI, a fresh SQL-aware check reads saved dependencies directly and fails
 on invalid shared SQL or incompatible inferred types. No editor, restart, generation,
 or watcher event is required. Use `bun run sqlts:check:all` for this checkout's configured
-examples, or `reylo-sqlts check -p tsconfig.json` from the private package. Bun's built-in
+examples, or `sqlts check -p tsconfig.json` from the installed `@sqlts/core` package. Bun's built-in
 checker alone does not execute content mappers; the SQL-aware scripts invoke the
 mapper-enabled TypeScript compiler through Node. Checks cover their configured project,
 not every arbitrary file elsewhere in the repository.
@@ -468,10 +468,10 @@ Other failures still throw. The original error is `.cause`. Error conditions and
 codes use PostgreSQL 18's definitions. Constraint/table/column names narrow where the analyzer can rule out user code. Triggers, functions, and some extension casts keep errors open; custom SQLSTATEs are returned with an undefined condition. PostgreSQL errors still abort a
 transaction; a caught error is not a rollback or savepoint.
 
-`subscribeQueries` from `reylo-sqlts-experiment/runtime` provides opt-in start/end/error
+`subscribeQueries` from `@sqlts/core/runtime` provides opt-in start/end/error
 events, with source, SQL, ID, duration and row count, excluding bindings and row values.
 Observer exceptions do not change execution. `enableQueryTracing` from
-`reylo-sqlts-experiment/tracing` forwards those events to Node/Bun's `sqlts:query`
+`@sqlts/core/tracing` forwards those events to Node/Bun's `sqlts:query`
 diagnostics channel; call its returned function to disable it. No timing is collected
 without subscribers.
 

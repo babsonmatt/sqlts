@@ -8,7 +8,7 @@ await mkdir("work", { recursive: true });
 const dir = await mkdtemp(resolve("work/sqlts-shared-"));
 afterAll(() => rm(dir, { recursive: true, force: true }));
 const file = resolve(dir, "queries.sqlts");
-const fragments = `import {sql as s} from "reylo-sqlts-experiment";
+const fragments = `import {sql as s} from "@sqlts/core";
 export function matches(search: string) {
  const pattern = \`%\${search}%\`;
  return s.fragment\`(u.name ILIKE \${pattern} OR u.email ILIKE \${pattern})\`;
@@ -16,7 +16,7 @@ export function matches(search: string) {
 export const contactable = s.fragment\`u.email IS NOT NULL\`;
 export const tenant = (org: number) => s.fragment\`u.org_id = \${org}\`;
 `;
-const query = `import {sql} from "reylo-sqlts-experiment";
+const query = `import {sql} from "@sqlts/core";
 import {matches, contactable, tenant} from "./fragments.sqlts";
 const minimum = (id: number) => sql.fragment\`u.id >= \${id}\`;
 export function search(org: number, term?: string, email=false) {
@@ -39,7 +39,7 @@ await writeFile(
       allowImportingTsExtensions: true,
       types: ["node"],
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     include: ["*.ts", "*.sqlts"],
   }),
 );
@@ -116,8 +116,8 @@ try { for(const [term,email,ids] of [[undefined,false,[1,2,3]],['Alice',false,[1
  } console.log('shared fragments verified'); } finally {await db.end();}`,
   );
   for (const command of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const r = await run(command);
     expect(r.code, r.output).toBe(0);
@@ -126,7 +126,7 @@ try { for(const [term,email,ids] of [[undefined,false,[1,2,3]],['Alice',false,[1
 test("recursive fragment helpers fail with a bounded diagnostic", () => {
   expect(() =>
     prepare(
-      'import {sql} from "reylo-sqlts-experiment"; function f(){return sql.fragment`(${f()})`;} export const q=sql`SELECT 1 ${sql.where(f())}`;',
+      'import {sql} from "@sqlts/core"; function f(){return sql.fragment`(${f()})`;} export const q=sql`SELECT 1 ${sql.where(f())}`;',
       file,
     ),
   ).toThrow("Recursive fragment");
@@ -184,6 +184,6 @@ test("shared fragment edits fail closed in the IDE until their saved dependency 
 
 test("ordinary recursive value functions remain parameters and application code is never evaluated", () => {
   const source =
-    'import {sql} from "reylo-sqlts-experiment"; function value(n:number):number {if(n<=0)return 0;return value(n-1);} export const q=sql`SELECT ${value(3)}::int AS answer`;throw new Error("do not evaluate");';
+    'import {sql} from "@sqlts/core"; function value(n:number):number {if(n<=0)return 0;return value(n-1);} export const q=sql`SELECT ${value(3)}::int AS answer`;throw new Error("do not evaluate");';
   expect(prepare(source, file).queries[0]!.variants).toHaveLength(1);
 });

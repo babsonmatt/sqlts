@@ -65,7 +65,7 @@ test("lexical shadowing does not borrow outer constants and unrelated imports ge
 });
 test("local template constants and nested conditions resolve, unsupported control flow remains explicit", () => {
   const sql =
-    'import {sql} from "reylo-sqlts-experiment";export function findUsers(orgId:number, pageSize:number, search?:string, email=false){const pattern=`%${search}%`;return sql`SELECT id FROM users ${sql.where(sql`org_id=${orgId}`,search && (email ? sql`email ILIKE ${pattern}` : sql`name ILIKE ${pattern}`))} LIMIT ${pageSize}`;}';
+    'import {sql} from "@sqlts/core";export function findUsers(orgId:number, pageSize:number, search?:string, email=false){const pattern=`%${search}%`;return sql`SELECT id FROM users ${sql.where(sql`org_id=${orgId}`,search && (email ? sql`email ILIKE ${pattern}` : sql`name ILIKE ${pattern}`))} LIMIT ${pageSize}`;}';
   const text = hover('10,20,"alice",true', "", sql);
   expect(text).toContain("one path");
   expect(text).toContain("email ILIKE");
@@ -88,11 +88,11 @@ test("unsaved shared fragments participate and SQL-looking input remains a param
     [pathToFileURL(callerFile).href, source],
     [
       pathToFileURL(file).href,
-      'import {sql} from "reylo-sqlts-experiment";import {search} from "./shared.sqlts";export const findUsers=(q:string)=>sql`SELECT id FROM users WHERE ${search(q)}`;',
+      'import {sql} from "@sqlts/core";import {search} from "./shared.sqlts";export const findUsers=(q:string)=>sql`SELECT id FROM users WHERE ${search(q)}`;',
     ],
     [
       pathToFileURL(sharedFile).href,
-      'import {sql} from "reylo-sqlts-experiment";export const search=(q:string)=>sql.fragment`name ILIKE ${`%${q}%`}`;',
+      'import {sql} from "@sqlts/core";export const search=(q:string)=>sql.fragment`name ILIKE ${`%${q}%`}`;',
     ],
   ]);
   const result =
@@ -162,7 +162,7 @@ test("resolved call previews agree with real compiled SQL and parameter values",
     `import {findUsers} from './queries.sqlts';console.log(JSON.stringify([${args.map((a) => `findUsers(${a}).compile()`).join(",")}]))`,
   );
   const child = Bun.spawn(
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
     { stdout: "pipe", stderr: "pipe" },
   );
   const [code, out, err] = await Promise.all([

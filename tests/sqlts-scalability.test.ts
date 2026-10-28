@@ -14,7 +14,7 @@ test("equivalent branches share analysis while distinct bindings and genuine sha
     (_, i) => `b${i} ? sql\`id >= \${value}\` : sql\`id >= \${value}\``,
   );
   const source =
-    'import {sql} from "reylo-sqlts-experiment"; export const q=sql`SELECT id FROM users ${sql.where(' +
+    'import {sql} from "@sqlts/core"; export const q=sql`SELECT id FROM users ${sql.where(' +
     conditionals.join(",") +
     ")}`;";
   const p = prepare(source, file);
@@ -23,7 +23,7 @@ test("equivalent branches share analysis while distinct bindings and genuine sha
   const distinct = source.replaceAll(": sql`id >= ${value}`", ": sql.empty");
   expect(() => prepare(distinct, file)).toThrow("64 SQL shapes");
   const bindings =
-    'import {sql} from "reylo-sqlts-experiment";sql`SELECT ${flag ? sql`${a}::int` : sql`${b}::int`} AS id`;';
+    'import {sql} from "@sqlts/core";sql`SELECT ${flag ? sql`${a}::int` : sql`${b}::int`} AS id`;';
   expect(prepare(bindings, file).queries[0]!.variants).toHaveLength(2);
 });
 test("identical SQL across query sites is analyzed once per transform, with schema validation on subsequent transforms", async () => {
@@ -31,11 +31,11 @@ test("identical SQL across query sites is analyzed once per transform, with sche
     resolve(dir, "tsconfig.json"),
     JSON.stringify({
       compilerOptions: { strict: true },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     }),
   );
   const content =
-    'import {sql} from "reylo-sqlts-experiment";\n' +
+    'import {sql} from "@sqlts/core";\n' +
     Array.from(
       { length: 16 },
       (_, i) => `export const q${i}=()=>sql\`SELECT 42::int AS answer\`;`,

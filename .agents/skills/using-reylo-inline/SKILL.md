@@ -1,6 +1,6 @@
 ---
 name: using-reylo-inline
-description: Set up, write, and debug typed PostgreSQL queries in the Reylo inline SQL prototype, especially .sqlts files importing reylo-sqlts-experiment or named inline queries importing .inline/sql.ts. Covers local setup, conditional fragments, inferred types, SQL-aware checks, and Zed mapper configuration. Use for this inline API, not ordinary Reylo .sql imports or the separate .compose.sql builder.
+description: Set up, write, and debug typed PostgreSQL queries in the Reylo inline SQL prototype, especially .sqlts files importing @sqlts/core or named inline queries importing .inline/sql.ts. Covers local setup, conditional fragments, inferred types, SQL-aware checks, and Zed mapper configuration. Use for this inline API, not ordinary Reylo .sql imports or the separate .compose.sql builder.
 ---
 
 # Reylo inline SQL
@@ -11,13 +11,13 @@ Preserve the project's existing workflow. This skill describes a local prototype
 
 For a query edit in a working project, reuse its configuration and check that the relevant tsconfig includes the new files. Do not reinstall dependencies or rewrite editor settings on every query task.
 
-For initial `.sqlts` setup, a new example directory, or missing-module/editor errors, read [local setup](references/setup.md). Inspect package resolution, compiler/mapper configuration, database access, checker coverage, and loader registration. Check editor configuration when the user uses that editor; repair missing project settings without replacing unrelated settings. CLI success alone does not prove editor support. The private `sqlts:pack` tarball supports separate projects; nothing is published. Do not invent a registry installation command.
+For initial `.sqlts` setup, a new example directory, or missing-module/editor errors, read [local setup](references/setup.md). Inspect package resolution, compiler/mapper configuration, database access, checker coverage, and loader registration. Check editor configuration when the user uses that editor; repair missing project settings without replacing unrelated settings. CLI success alone does not prove editor support. Separate projects install `@sqlts/core` from npm with `reylo@0.6` and `@reylosql/postgres@0.6` (or a local `sqlts:pack` tarball for unreleased changes).
 
 ## Identify the API
 
 | Source                                       | Query and fragment syntax                                                                | Validation                                                 |
 | -------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `.sqlts`, importing `reylo-sqlts-experiment` | Outer `sql` is a complete query; nested `sql` or explicit `sql.fragment` supplies pieces | TypeScript content mapper; no separate generation step     |
+| `.sqlts`, importing `@sqlts/core` | Outer `sql` is a complete query; nested `sql` or explicit `sql.fragment` supplies pieces | TypeScript content mapper; no separate generation step     |
 | Ordinary `.ts`, importing `.inline/sql.ts`   | Complete `sql.query("uniqueName")` tagged template; pieces use `sql`                     | Regenerate that source's metadata, then typecheck          |
 | `.auto` experiment                           | Preserve its existing transform-based API                                                | Use its own scripts; it still generates transformed source |
 

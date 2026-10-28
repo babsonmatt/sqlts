@@ -75,7 +75,7 @@ async function child(runtime: string, mode: string, dir: string, output: string)
   const preload = runtime === "node" ? "--import" : "--preload";
   if (mode === "steady" || mode === "reylo") command.push(preload, "reylo/register");
   if (mode === "steady" || mode === "inline")
-    command.push(preload, "reylo-sqlts-experiment/register");
+    command.push(preload, "@sqlts/core/register");
   command.push(worker, mode, dir, schema, output);
   const entries = () =>
     readdir(resolve(dir, ".reylo/queries"))

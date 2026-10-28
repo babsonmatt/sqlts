@@ -75,7 +75,7 @@ export function prepare(
     .filter(
       (n) =>
         ts.isStringLiteral(n.moduleSpecifier) &&
-        n.moduleSpecifier.text === "reylo-sqlts-experiment",
+        n.moduleSpecifier.text === "@sqlts/core",
     );
   if (imports.length > 1) throw Error("Use one sql import per .sqlts module");
   const statement = imports[0];
@@ -100,7 +100,7 @@ export function prepare(
     statement.importClause?.name ||
     statement.importClause?.isTypeOnly
   )
-    throw Error('Import { sql } (optionally aliased) from "reylo-sqlts-experiment"');
+    throw Error('Import { sql } (optionally aliased) from "@sqlts/core"');
   const binding = bindings.elements[0]!;
   const name = binding.name.text;
   let prefix = "__sqlts_" + createHash("sha256").update(file).digest("hex").slice(0, 12) + "_";

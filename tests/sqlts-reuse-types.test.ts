@@ -13,7 +13,7 @@ afterAll(() => rm(dir, { recursive: true, force: true }));
 const file = resolve(dir, "queries.sqlts"),
   shared = resolve(dir, "fragments.sqlts"),
   caller = resolve(dir, "caller.ts");
-const fragments = `import {sql} from "reylo-sqlts-experiment";
+const fragments = `import {sql} from "@sqlts/core";
 export function emailRequired(enabled=true) {return sql.fragment\`\${enabled ? sql.fragment\`email IS NOT NULL\` : sql.empty}\`;}
 export const nested = (switchOn:boolean) => emailRequired(switchOn);
 export function inverse(flag:boolean) {const local = !flag;return emailRequired(local);}
@@ -24,7 +24,7 @@ export function logicalValue(flag:boolean) {const value=flag && "email";return s
 export function projection(mode:"id"|"email"="id") {return sql.fragment\`\${mode === "id" ? sql.fragment\`id\` : sql.fragment\`email\`}\`;}
 `;
 const source =
-  `import {sql} from "reylo-sqlts-experiment";
+  `import {sql} from "@sqlts/core";
 import {emailRequired,nested,inverse,opaque,mutating,projection,logicalValue} from "./fragments.sqlts";
 export const arrow = (flag=false) => sql\`SELECT email FROM reylo_inline_demo.users \${sql.where(emailRequired(flag))} ORDER BY id\`;
 export const expression = function(flag=false) {return sql\`SELECT email FROM reylo_inline_demo.users \${sql.where(nested(flag))}\`;};
@@ -101,7 +101,7 @@ const config = {
     noUncheckedIndexedAccess: true,
     types: ["node"],
   },
-  contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+  contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
   include: ["*.sqlts", "caller.ts"],
 };
 await writeFile(resolve(dir, "tsconfig.json"), JSON.stringify(config));
@@ -261,8 +261,8 @@ for(const q of [choose(),choose("email")]) {const c=q.compile();deepEqual(await 
 console.log("reuse branches match");}finally{await db.end();}`,
   );
   for (const args of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const result = await run(args);
     expect(result.code, result.output).toBe(0);

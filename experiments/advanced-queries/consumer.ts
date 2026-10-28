@@ -20,7 +20,7 @@ export async function explore(db: PostgresClient, orgId: number) {
   return { members, peers, leaderboard, tree, memberId, position, nextId, totalCents, path };
 }
 
-// bun --preload reylo-sqlts-experiment/register experiments/advanced-queries/consumer.ts
+// bun --preload @sqlts/core/register experiments/advanced-queries/consumer.ts
 if (import.meta.main) {
   const { Pool } = await import("pg");
   const db = new Pool({ connectionString: process.env.DATABASE_URL });

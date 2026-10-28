@@ -13,7 +13,7 @@ const dir = await mkdtemp(resolve("work/sqlts-test-"));
 afterAll(() => rm(dir, { recursive: true, force: true }));
 const file = resolve(dir, "queries.sqlts"),
   caller = resolve(dir, "caller.ts");
-const source = `import {sql} from "reylo-sqlts-experiment";
+const source = `import {sql} from "@sqlts/core";
 // 🎉 unicode and separate return types
 export function ids(orgId:number) {return sql\`SELECT id FROM reylo_inline_demo.users WHERE org_id = \${orgId}\`;}
 export function names(orgId:number) {return sql\`SELECT name,email FROM reylo_inline_demo.users WHERE org_id = \${orgId}\`;}
@@ -42,7 +42,7 @@ const config = {
     noUncheckedIndexedAccess: true,
     types: ["node"],
   },
-  contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+  contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
   include: ["*.sqlts", "*.ts"],
 };
 await writeFile(resolve(dir, "tsconfig.json"), JSON.stringify(config));
@@ -71,13 +71,13 @@ const write = (text = source, code = consumer) =>
 
 test("sqlts transform distinguishes query/fragment tags and respects aliased and shadowed imports", () => {
   const p = prepare(
-    'import {sql as s} from "reylo-sqlts-experiment"; function q(x:number){return s`SELECT id FROM users ${s.where(s.fragment`id = ${x}`)}`;} function other(s:any){return s`unrelated`;}',
+    'import {sql as s} from "@sqlts/core"; function q(x:number){return s`SELECT id FROM users ${s.where(s.fragment`id = ${x}`)}`;} function other(s:any){return s`unrelated`;}',
     file,
   );
   expect(p.queries.length).toBe(1);
   expect(p.queries[0]!.variants.length).toBe(1);
   const nested = prepare(
-    'import {sql} from "reylo-sqlts-experiment"; sql`SELECT (${sql`SELECT 1`})`',
+    'import {sql} from "@sqlts/core"; sql`SELECT (${sql`SELECT 1`})`',
     file,
   );
   expect(nested.queries).toHaveLength(1);
@@ -183,10 +183,10 @@ try {
       Bun.which("node")!,
       "--env-file=.env",
       "--import",
-      "reylo-sqlts-experiment/register",
+      "@sqlts/core/register",
       "experiments/sqlts/demo.ts",
     ],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", "experiments/sqlts/demo.ts"],
+    [process.execPath, "--preload", "@sqlts/core/register", "experiments/sqlts/demo.ts"],
   ]) {
     const result = await run(command);
     expect(result.code, result.output).toBe(0);

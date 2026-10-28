@@ -23,7 +23,7 @@ const catalog: Catalog = {
     },
   ],
 };
-const preamble = '// 🌍\r\nimport {sql as q} from "reylo-sqlts-experiment";\r\n';
+const preamble = '// 🌍\r\nimport {sql as q} from "@sqlts/core";\r\n';
 const service = new CompletionService();
 function ask(marked: string) {
   const cursor = marked.indexOf("▌");

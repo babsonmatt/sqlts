@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 await mkdir("work", { recursive: true });
 const dir = await mkdtemp(resolve("work/sqlts-parity-"));
 afterAll(() => rm(dir, { recursive: true, force: true }));
-const queries = `import {sql} from 'reylo-sqlts-experiment';
+const queries = `import {sql} from '@sqlts/core';
 export function computed(){return sql\`SELECT name,upper(email) AS upper_email,coalesce(email,'') AS display_email,email IS NOT NULL AS has_email FROM reylo_inline_demo.users ORDER BY id\`;}
 export function nested(){return sql\`SELECT u.id,jsonb_build_object('name',u.name,'email',u.email) AS profile,(SELECT coalesce(jsonb_agg(jsonb_build_object('id',p.id,'name',p.name)), '[]') FROM reylo_inline_demo.users p WHERE p.org_id=u.org_id) AS peers FROM reylo_inline_demo.users u ORDER BY u.id\`;}
 export function aggregate(){return sql\`SELECT count(*) AS total,sum(id) AS sum_id FROM reylo_inline_demo.users\`;}
@@ -31,7 +31,7 @@ await writeFile(
       allowImportingTsExtensions: true,
       types: ["node"],
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     include: ["*.ts", "*.sqlts"],
   }),
 );
@@ -139,8 +139,8 @@ try{
 `,
   );
   for (const command of [
-    ["node", "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    ["node", "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const r = await run(command);
     expect(r.code, r.output).toBe(0);

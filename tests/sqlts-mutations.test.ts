@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 await mkdir("work", { recursive: true });
 const dir = await mkdtemp(resolve("work/sqlts-mutations-"));
 afterAll(() => rm(dir, { recursive: true, force: true }));
-const queries = `import {sql} from 'reylo-sqlts-experiment';
+const queries = `import {sql} from '@sqlts/core';
 export function insert(id:number,name:string){return sql\`INSERT INTO reylo_inline_demo.users(id,org_id,name,email) VALUES(\${id},987654,\${name},NULL) RETURNING id,name,email\`;}
 export function update(id:number,name:string,email=false){return sql\`UPDATE reylo_inline_demo.users SET name=\${name} \${email ? sql\`,email=NULL\` : sql.empty} WHERE id=\${id} AND org_id=987654 RETURNING id,name,email\`;}
 export function upsert(id:number,name:string){return sql\`INSERT INTO reylo_inline_demo.users(id,org_id,name) VALUES(\${id},987654,\${name}) ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name WHERE reylo_inline_demo.users.org_id=987654 RETURNING id,name\`;}
@@ -27,7 +27,7 @@ await writeFile(
       allowImportingTsExtensions: true,
       types: ["node"],
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     include: ["*.ts", "*.sqlts"],
   }),
 );
@@ -102,8 +102,8 @@ console.log('mutation transactions verified');
 }finally{await db.query('ROLLBACK');db.release();await pool.end();}`,
   );
   for (const args of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const r = await run(args);
     expect(r.code, r.output).toBe(0);

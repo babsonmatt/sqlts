@@ -9,6 +9,7 @@
       },
       "devDependencies": {
         "@reylosql/postgres": "0.6.0",
+        "@sqlts/core": "workspace:*",
         "@types/bun": "1.4.3",
         "@types/pg": "8.23.1",
         "@typescript/native-preview": "7.0.0-dev.20260707.2",
@@ -19,14 +20,13 @@
         "oxlint-tsgolint": "7.0.2005",
         "pg": "8.23.1",
         "postgres": "3.4.9",
-        "reylo-sqlts-experiment": "workspace:*",
         "typescript": "7.1.0-beta",
         "typescript-ast": "npm:typescript@5.9.3",
         "vite": "8.3.5",
       },
     },
     "experiments/sqlts/plugin": {
-      "name": "reylo-sqlts-experiment",
+      "name": "@sqlts/core",
       "version": "0.0.1",
     },
   },
@@ -207,6 +207,8 @@
 
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.1", "", {}, "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw=="],
 
+    "@sqlts/core": ["@sqlts/core@workspace:experiments/sqlts/plugin"],
+
     "@types/bun": ["@types/bun@1.4.3", "", { "dependencies": { "bun-types": "1.4.3" } }, "sha512-N67Pqy8JXbAY/j0tNraS3V5mubGvc6rrrNDmDCtZLlFzccbUJPDb0tvgUBC5q4m8ybkP93Jcn1QB+RYQ6PvBhw=="],
 
     "@types/node": ["@types/node@26.6.5", "", { "dependencies": { "undici-types": "~8.9.0" } }, "sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg=="],
@@ -348,8 +350,6 @@
     "postgres-interval": ["postgres-interval@1.2.0", "", { "dependencies": { "xtend": "^4.0.0" } }, "sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ=="],
 
     "reylo": ["reylo@0.6.0", "", { "peerDependencies": { "@reylosql/mysql": "0.6.0", "@reylosql/postgres": "0.6.0", "@reylosql/sqlite": "0.6.0", "slonik": ">=49.12.0" }, "optionalPeers": ["@reylosql/mysql", "@reylosql/postgres", "@reylosql/sqlite", "slonik"], "bin": { "reylo": "src/cli.js" } }, "sha512-Njt2l+11XWivq+wcfq0NMz5Y5tQoePmv3U5fD/wC95KjGPS1EY6UEx0/js5zhn+ayNiF4Q1Xelixx2iIbh5Ywg=="],
-
-    "reylo-sqlts-experiment": ["reylo-sqlts-experiment@workspace:experiments/sqlts/plugin"],
 
     "rolldown": ["rolldown@1.2.15", "", { "dependencies": { "@oxc-project/types": "=0.155.0", "@rolldown/pluginutils": "^1.0.0" }, "optionalDependencies": { "@rolldown/binding-android-arm-eabi": "1.2.15", "@rolldown/binding-android-arm64": "1.2.15", "@rolldown/binding-darwin-arm64": "1.2.15", "@rolldown/binding-darwin-x64": "1.2.15", "@rolldown/binding-freebsd-x64": "1.2.15", "@rolldown/binding-linux-arm-gnueabihf": "1.2.15", "@rolldown/binding-linux-arm64-gnu": "1.2.15", "@rolldown/binding-linux-arm64-musl": "1.2.15", "@rolldown/binding-linux-ppc64-gnu": "1.2.15", "@rolldown/binding-linux-s390x-gnu": "1.2.15", "@rolldown/binding-linux-x64-gnu": "1.2.15", "@rolldown/binding-linux-x64-musl": "1.2.15", "@rolldown/binding-openharmony-arm64": "1.2.15", "@rolldown/binding-win32-arm64-msvc": "1.2.15", "@rolldown/binding-win32-x64-msvc": "1.2.15" }, "bin": { "rolldown": "./bin/cli.mjs" } }, "sha512-6odND+fel5zVw3I4Yc2e69gvguDnX0CAAGiNDZSq4ik5WUcaLrkD2GLuog0XcODbor31hZ5ayEMgVDno+KPV5g=="],
 

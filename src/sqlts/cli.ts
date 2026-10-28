@@ -20,7 +20,7 @@ if (command === "check") {
   console.log(await buildSqlts(args[0]!, args[1]!));
 } else {
   console.error(
-    "Usage: reylo-sqlts check -p tsconfig.json\n       reylo-sqlts refresh-schema --project directory\n       bun reylo-sqlts build entry.ts output.mjs",
+    "Usage: sqlts check -p tsconfig.json\n       sqlts refresh-schema --project directory\n       bun sqlts build entry.ts output.mjs",
   );
   process.exitCode = 1;
 }

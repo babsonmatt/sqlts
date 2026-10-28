@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 import { inOrganization, matchesSearch, hasEmail } from "./fragments.sqlts";
 
 export function searchUsers(orgId: number, search?: string, onlyWithEmail = false, pageSize = 20) {

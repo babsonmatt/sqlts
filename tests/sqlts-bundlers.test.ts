@@ -19,16 +19,16 @@ await writeFile(
       target: "esnext",
       skipLibCheck: true,
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
   }),
 );
 await writeFile(
   resolve(dir, "fragments.sqlts"),
-  `import {sql} from 'reylo-sqlts-experiment';export const present=sql.fragment\`id > 0\`;`,
+  `import {sql} from '@sqlts/core';export const present=sql.fragment\`id > 0\`;`,
 );
 await writeFile(
   resolve(dir, "queries.sqlts"),
-  `import {sql} from 'reylo-sqlts-experiment';import {present} from './fragments.sqlts';export function users(){return sql\`SELECT id,name FROM reylo_inline_demo.users \${sql.where(present)} ORDER BY id\`;}`,
+  `import {sql} from '@sqlts/core';import {present} from './fragments.sqlts';export function users(){return sql\`SELECT id,name FROM reylo_inline_demo.users \${sql.where(present)} ORDER BY id\`;}`,
 );
 await writeFile(
   resolve(dir, "entry.ts"),
@@ -88,7 +88,7 @@ test("Vite SSR reloads shared fragments; client bundles are rejected", async () 
     expect(first.users().compile().text).toContain("id > 0");
     await writeFile(
       resolve(dir, "fragments.sqlts"),
-      `import {sql} from 'reylo-sqlts-experiment';export const present=sql.fragment\`id > 1\`;`,
+      `import {sql} from '@sqlts/core';export const present=sql.fragment\`id > 1\`;`,
     );
     server.watcher.emit("change", resolve(dir, "fragments.sqlts"));
     let updated = false;

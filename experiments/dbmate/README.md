@@ -49,8 +49,8 @@ and run a fresh SQL-aware check. For the private installed SQLTS package:
 
 ```sh
 dbmate --no-dump-schema --migration-lock migrate --strict
-node node_modules/reylo-sqlts-experiment/src/sqlts/cli.js refresh-schema --project .
-node node_modules/reylo-sqlts-experiment/src/sqlts/cli.js check -p tsconfig.json
+node node_modules/@sqlts/core/src/sqlts/cli.js refresh-schema --project .
+node node_modules/@sqlts/core/src/sqlts/cli.js check -p tsconfig.json
 ```
 
 In a script, preserve the migration exit status. The demo's adapter signals after

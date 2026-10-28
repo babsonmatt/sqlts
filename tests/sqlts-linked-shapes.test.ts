@@ -3,7 +3,7 @@ import { mkdtemp, writeFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { prepare } from "../src/sqlts/transform.ts";
 
-const source = `import {sql} from "reylo-sqlts-experiment";
+const source = `import {sql} from "@sqlts/core";
 export function joined(enabled:boolean){return sql\`
 SELECT u.id, \${enabled ? sql\`peer.email\` : sql\`NULL::text\`} AS peer_email
 FROM reylo_inline_demo.users u
@@ -18,14 +18,14 @@ test("linked stable guards discard impossible join/select combinations without t
   try {
     await writeFile(
       resolve(dir, "pieces.sqlts"),
-      'import {sql} from "reylo-sqlts-experiment";export function column(flag:boolean){return flag?sql.fragment`peer.email`:sql.fragment`NULL::text`;}export function join(flag:boolean){return flag?sql.fragment`LEFT JOIN reylo_inline_demo.users peer ON peer.id=u.id+1`:sql.empty;}export function changed(flag:boolean){const sideEffect=(flag=false);return column(flag);}',
+      'import {sql} from "@sqlts/core";export function column(flag:boolean){return flag?sql.fragment`peer.email`:sql.fragment`NULL::text`;}export function join(flag:boolean){return flag?sql.fragment`LEFT JOIN reylo_inline_demo.users peer ON peer.id=u.id+1`:sql.empty;}export function changed(flag:boolean){const sideEffect=(flag=false);return column(flag);}',
     );
     const shared =
       "export function joinedShared(enabled:boolean){return sql`SELECT u.id, ${column(enabled)} AS peer_email FROM reylo_inline_demo.users u ${join(enabled)} ORDER BY u.id`;}";
     const safe =
       source.replace(
-        'import {sql} from "reylo-sqlts-experiment";',
-        'import {sql} from "reylo-sqlts-experiment";import {column,join} from "./pieces.sqlts";',
+        'import {sql} from "@sqlts/core";',
+        'import {sql} from "@sqlts/core";import {column,join} from "./pieces.sqlts";',
       ) + shared;
     await writeFile(file, safe);
     const p = prepare(safe, file);
@@ -33,17 +33,17 @@ test("linked stable guards discard impossible join/select combinations without t
     expect(p.queries[1]!.variants).toHaveLength(1);
     expect(p.queries[2]!.variants).toHaveLength(2);
     const independent =
-      'import {sql} from "reylo-sqlts-experiment";import {column,join,changed} from "./pieces.sqlts";export const q=(a:boolean,b:boolean)=>sql`SELECT ${column(a)} FROM reylo_inline_demo.users u ${join(b)}`;';
+      'import {sql} from "@sqlts/core";import {column,join,changed} from "./pieces.sqlts";export const q=(a:boolean,b:boolean)=>sql`SELECT ${column(a)} FROM reylo_inline_demo.users u ${join(b)}`;';
     expect(prepare(independent, file).queries[0]!.variants).toHaveLength(4);
     expect(
       prepare(independent.replace("column(a)", "changed(a)").replace("join(b)", "join(a)"), file)
         .queries[0]!.variants,
     ).toHaveLength(4);
     const mutation =
-      'import {sql} from "reylo-sqlts-experiment";export function q(flag:boolean){const mutate=()=>{flag=!flag;};return sql`SELECT id FROM users ${sql.where(flag&&sql`id>0`,flag&&sql`id<10`)}`;}';
+      'import {sql} from "@sqlts/core";export function q(flag:boolean){const mutate=()=>{flag=!flag;};return sql`SELECT id FROM users ${sql.where(flag&&sql`id>0`,flag&&sql`id<10`)}`;}';
     expect(prepare(mutation, file).queries[0]!.variants).toHaveLength(4);
     const mutable =
-      'import {sql} from "reylo-sqlts-experiment";let flag=true;export const q=()=>sql`SELECT id FROM users ${sql.where(flag&&sql`id>0`,flag&&sql`id<10`)}`;';
+      'import {sql} from "@sqlts/core";let flag=true;export const q=()=>sql`SELECT id FROM users ${sql.where(flag&&sql`id>0`,flag&&sql`id<10`)}`;';
     expect(prepare(mutable, file).queries[0]!.variants).toHaveLength(4);
     await writeFile(
       resolve(dir, "caller.ts"),
@@ -63,7 +63,7 @@ test("linked stable guards discard impossible join/select combinations without t
           noUncheckedIndexedAccess: true,
           types: ["node"],
         },
-        contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+        contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
         files: ["caller.ts"],
       }),
     );
@@ -95,10 +95,10 @@ test("linked stable guards discard impossible join/select combinations without t
         Bun.which("node")!,
         "--env-file=.env",
         "--import",
-        "reylo-sqlts-experiment/register",
+        "@sqlts/core/register",
         runner,
       ],
-      [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+      [process.execPath, "--preload", "@sqlts/core/register", runner],
     ])
       expect(await run(args)).toContain("verified");
   } finally {

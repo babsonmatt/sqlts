@@ -10,6 +10,6 @@
     "allowImportingTsExtensions": true,
     "noUncheckedIndexedAccess": true
   },
-  "contentMappers": [{ "package": "reylo-sqlts-experiment", "extensions": [".sqlts"] }],
+  "contentMappers": [{ "package": "@sqlts/core", "extensions": [".sqlts"] }],
   "files": ["queries.sqlts", "consumer.ts", "narrowing.ts"]
 }

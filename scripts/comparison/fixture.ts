@@ -17,7 +17,7 @@ export async function fixture(directory: string, schema: string) {
         types: ["node"],
       },
       contentMappers: [
-        { package: "reylo-sqlts-experiment", extensions: [".sqlts"] },
+        { package: "@sqlts/core", extensions: [".sqlts"] },
         { package: "reylo", extensions: [".sql"] },
       ],
       include: ["*.sqlts", "*.sql"],
@@ -31,7 +31,7 @@ export async function fixture(directory: string, schema: string) {
   const table = tableName(schema);
   await writeFile(
     resolve(directory, "queries.sqlts"),
-    'import {sql} from "reylo-sqlts-experiment";\n' +
+    'import {sql} from "@sqlts/core";\n' +
       "export function search(org:number, search:string|undefined, email:boolean, limit:number) { return sql`SELECT id, name, email FROM " +
       table +
       " ${sql.where(sql.fragment`org_id = ${org}`, search && sql.fragment`name ILIKE ${search}`, email && sql.fragment`email IS NOT NULL`)} ORDER BY id LIMIT ${limit}`; }\n",

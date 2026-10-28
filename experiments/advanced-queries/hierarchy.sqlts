@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 // Illustrative manager links: Alice -> Bob -> Carol. No hierarchy table is needed.
 // The scoped CTE keeps both anchor and recursive steps inside the organization.

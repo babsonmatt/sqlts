@@ -29,7 +29,7 @@ beforeAll(async () => {
   dir = await mkdtemp(resolve("work/sqlts-main-"));
   await writeFile(
     resolve(dir, "queries.sqlts"),
-    `import {sql} from 'reylo-sqlts-experiment';
+    `import {sql} from '@sqlts/core';
 export function insert(id:number,email:string){return sql\`INSERT INTO users(id,email,amount) VALUES(\${id},\${email},1) RETURNING id\`;}
 export function conditional(id:number,email:string,detail:boolean){return sql\`INSERT INTO users(id,email,amount) VALUES(\${id},\${email},1) RETURNING id\${detail?sql\`,email\`:sql.empty}\`;}
 export function wrapped(id:number,email:string,detail:boolean){return conditional(id,email,detail);}
@@ -54,7 +54,7 @@ export function projection(){return sql\`SELECT length(t) AS n FROM (SELECT NULL
         allowImportingTsExtensions: true,
         types: ["node"],
       },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       include: ["types.ts", "*.sqlts"],
     }),
   );
@@ -122,7 +122,7 @@ test("main runtime decodes values, reports constraint names and custom SQLSTATEs
   }
   await writeFile(
     resolve(dir, "values.sqlts"),
-    `import {sql} from 'reylo-sqlts-experiment';
+    `import {sql} from '@sqlts/core';
 export function values(v:number[],h:Record<string,string|null>){return sql\`SELECT \${v}::vector AS embedding,\${h}::hstore AS attrs,interval '1 day 02:03:04' AS duration\`;}
 `,
   );
@@ -162,8 +162,8 @@ equal((await q.insert(3,'a').try(conn)).error.constraint,'users_email_key');
 }finally{await db.end();}`,
   );
   for (const cmd of [
-    ["node", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    ["node", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const r = await run(cmd);
     expect(r.code, r.output).toBe(0);

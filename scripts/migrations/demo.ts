@@ -176,7 +176,7 @@ export async function demoMigrations() {
       [process.execPath, "--preload"],
     ]) {
       const result = await run(
-        [binary!, flag!, "reylo-sqlts-experiment/register", "run.ts"],
+        [binary!, flag!, "@sqlts/core/register", "run.ts"],
         project,
         env,
       );

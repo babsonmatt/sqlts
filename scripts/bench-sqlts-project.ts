@@ -24,12 +24,12 @@ await writeFile(
       noUncheckedIndexedAccess: true,
       types: ["node"],
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     include: ["*.ts", "*.sqlts", "helpers/**/*.sqlts"],
   }),
 );
 const predicate =
-  'import {sql} from "reylo-sqlts-experiment";export function filters(a=false,b=false){return sql.fragment`${sql.where(a&&sql.fragment`u.email IS NOT NULL`,b&&sql.fragment`u.id > 1`)}`;}';
+  'import {sql} from "@sqlts/core";export function filters(a=false,b=false){return sql.fragment`${sql.where(a&&sql.fragment`u.email IS NOT NULL`,b&&sql.fragment`u.id > 1`)}`;}';
 for (let group = 0; group < 2; group++) {
   const folder = resolve(dir, `helpers/g${group}`);
   await mkdir(folder, { recursive: true });
@@ -59,7 +59,7 @@ const queries = [
 const files = Array.from({ length: 8 }, (_, index) => ({
   file: resolve(dir, `queries${index}.sqlts`),
   source:
-    `import {sql} from "reylo-sqlts-experiment";import {filters} from "./helpers/g${index % 2}/level0.sqlts";\n` +
+    `import {sql} from "@sqlts/core";import {filters} from "./helpers/g${index % 2}/level0.sqlts";\n` +
     Array.from(
       { length: 3 },
       (_, q) =>

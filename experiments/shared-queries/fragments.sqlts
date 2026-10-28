@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 // Explicit fragment spelling makes this safe to reuse without defining a query.
 // Each consumer must provide the `u` alias with compatible columns.

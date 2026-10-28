@@ -25,19 +25,19 @@ await writeFile(
       noUncheckedIndexedAccess: true,
       types: ["node"],
     },
-    contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+    contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
     include: ["*.ts", "*.sqlts"],
   }),
 );
 await writeFile(
   resolve(directory, "fragments.sqlts"),
-  `import {sql} from "reylo-sqlts-experiment";
+  `import {sql} from "@sqlts/core";
 export function filters(a:boolean,b:boolean,c:boolean) {return sql.fragment\`\${sql.where(a && sql.fragment\`email IS NOT NULL\`, b && sql.fragment\`id > 1\`, c && sql.fragment\`name <> 'Bob'\`)}\`;}`,
 );
 const files = Array.from({ length: 8 }, (_, fileIndex) => ({
   file: resolve(directory, `queries${fileIndex}.sqlts`),
   source:
-    `import {sql} from "reylo-sqlts-experiment";import {filters} from "./fragments.sqlts";\n` +
+    `import {sql} from "@sqlts/core";import {filters} from "./fragments.sqlts";\n` +
     Array.from(
       { length: 16 },
       (_, i) =>

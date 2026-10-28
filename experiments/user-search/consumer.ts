@@ -26,7 +26,7 @@ export async function consumeUsers(db: PostgresClient, orgId: number) {
 }
 
 // Run from the repository root:
-// bun --preload reylo-sqlts-experiment/register experiments/user-search/consumer.ts
+// bun --preload @sqlts/core/register experiments/user-search/consumer.ts
 if (import.meta.main) {
   const { Pool } = await import("pg");
   const db = new Pool({ connectionString: process.env.DATABASE_URL });

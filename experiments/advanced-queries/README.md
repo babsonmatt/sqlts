@@ -13,13 +13,13 @@ bun run sqlts:advanced:test
 The demo script includes the SQLTS preload. To run it directly:
 
 ```sh
-bun --preload reylo-sqlts-experiment/register experiments/advanced-queries/consumer.ts
+bun --preload @sqlts/core/register experiments/advanced-queries/consumer.ts
 ```
 
 Node works too:
 
 ```sh
-node --env-file=.env --import reylo-sqlts-experiment/register experiments/advanced-queries/consumer.ts
+node --env-file=.env --import @sqlts/core/register experiments/advanced-queries/consumer.ts
 ```
 
 ## What to explore

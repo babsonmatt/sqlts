@@ -33,11 +33,11 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     JSON.stringify({
       type: "module",
       scripts: {
-        "check:sql": "reylo-sqlts check -p tsconfig.json",
+        "check:sql": "sqlts check -p tsconfig.json",
         check: "bun run check:sql",
       },
       dependencies: {
-        "reylo-sqlts-experiment": tarball,
+        "@sqlts/core": tarball,
         reylo: "0.6.0",
         "@reylosql/postgres": "0.6.0",
         typescript: "7.1.0-beta",
@@ -62,17 +62,17 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
         allowImportingTsExtensions: true,
         types: ["node"],
       },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       files: ["queries.sqlts", "consumer.ts", "fragments.sqlts"],
     }),
   );
   await writeFile(
     resolve(dir, "fragments.sqlts"),
-    `import {sql} from 'reylo-sqlts-experiment';export const tenant=(id:number)=>sql.fragment\`org_id=\${id}\`;`,
+    `import {sql} from '@sqlts/core';export const tenant=(id:number)=>sql.fragment\`org_id=\${id}\`;`,
   );
   await writeFile(
     resolve(dir, "queries.sqlts"),
-    `import {sql} from 'reylo-sqlts-experiment';import {tenant} from './fragments.sqlts';export const users=(id:number)=>sql\`SELECT id,name FROM reylo_inline_demo.users WHERE \${tenant(id)} ORDER BY id\`;`,
+    `import {sql} from '@sqlts/core';import {tenant} from './fragments.sqlts';export const users=(id:number)=>sql\`SELECT id,name FROM reylo_inline_demo.users WHERE \${tenant(id)} ORDER BY id\`;`,
   );
   await writeFile(
     resolve(dir, "consumer.ts"),
@@ -80,7 +80,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   );
   const checked = await run([
     Bun.which("node")!,
-    "node_modules/reylo-sqlts-experiment/src/sqlts/cli.js",
+    "node_modules/@sqlts/core/src/sqlts/cli.js",
     "check",
     "-p",
     "tsconfig.json",
@@ -90,7 +90,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   // mapper-enabled TypeScript compiler. This is not Bun's built-in checker.
   const shortcut = await run([process.execPath, "check"]);
   expect(shortcut.code, shortcut.output).toBe(0);
-  expect(shortcut.output).toContain("reylo-sqlts check");
+  expect(shortcut.output).toContain("sqlts check");
   const queryFile = resolve(dir, "queries.sqlts");
   const consumerFile = resolve(dir, "consumer.ts");
   const helperFile = resolve(dir, "fragments.sqlts");
@@ -166,7 +166,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     const notified = native.notifications;
     const refreshed = await run([
       Bun.which("node")!,
-      resolve(dir, "node_modules/reylo-sqlts-experiment/src/sqlts/cli.js"),
+      resolve(dir, "node_modules/@sqlts/core/src/sqlts/cli.js"),
       "refresh-schema",
       "--project",
       dir,
@@ -208,7 +208,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   const preview = client(
     [
       Bun.which("node")!,
-      resolve(dir, "node_modules/reylo-sqlts-experiment/src/sqlts/preview-cli.js"),
+      resolve(dir, "node_modules/@sqlts/core/src/sqlts/preview-cli.js"),
       "--project",
       dir,
     ],
@@ -219,7 +219,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   );
   const queryUri = pathToFileURL(resolve(dir, "queries.sqlts")).href;
   const editing =
-    'import {sql} from "reylo-sqlts-experiment";export const query=()=>sql`SELECT u. FROM reylo_inline_demo.users u`;';
+    'import {sql} from "@sqlts/core";export const query=()=>sql`SELECT u. FROM reylo_inline_demo.users u`;';
   try {
     await preview.request("initialize", {
       processId: process.pid,
@@ -256,8 +256,8 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     await rm(resolve(dir, "must-not-load.ts"));
   }
   for (const args of [
-    [Bun.which("node")!, "--import", "reylo-sqlts-experiment/register", "consumer.ts"],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", "consumer.ts"],
+    [Bun.which("node")!, "--import", "@sqlts/core/register", "consumer.ts"],
+    [process.execPath, "--preload", "@sqlts/core/register", "consumer.ts"],
   ]) {
     const executed = await run(args);
     expect(executed.code, executed.output).toBe(0);
@@ -265,7 +265,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   }
   await writeFile(
     resolve(dir, "build.ts"),
-    `import {buildSqlts} from 'reylo-sqlts-experiment/build';await buildSqlts('./consumer.ts','./deployment.mjs');`,
+    `import {buildSqlts} from '@sqlts/core/build';await buildSqlts('./consumer.ts','./deployment.mjs');`,
   );
   const built = await run([process.execPath, "build.ts"]);
   expect(built.code, built.output).toBe(0);
@@ -292,7 +292,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
   await writeFile(
     resolve(production, "run.mjs"),
     `import {createRequire} from 'node:module';import {strict as assert} from 'node:assert';import {Pool} from 'pg';import {consume} from './deployment.mjs';
-  const require=createRequire(import.meta.url);assert.throws(()=>require.resolve('typescript-ast'));assert.throws(()=>require.resolve('reylo-sqlts-experiment'));
+  const require=createRequire(import.meta.url);assert.throws(()=>require.resolve('typescript-ast'));assert.throws(()=>require.resolve('@sqlts/core'));
   const db=new Pool({connectionString:process.env.DATABASE_URL});try{assert.equal(await consume(db),'Alice');}finally{await db.end();}`,
   );
   const executedProduction = await run([Bun.which("node")!, "run.mjs"], production);

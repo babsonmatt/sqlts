@@ -34,7 +34,7 @@ function sqlTemplates(source: string, file: string) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
       continue;
     const module = statement.moduleSpecifier.text;
-    if (module !== "reylo-sqlts-experiment" && !/(?:^|\/)\.inline\/sql(?:\.[jt]s)?$/.test(module))
+    if (module !== "@sqlts/core" && !/(?:^|\/)\.inline\/sql(?:\.[jt]s)?$/.test(module))
       continue;
     const imports = statement.importClause?.namedBindings;
     if (statement.importClause?.isTypeOnly || !imports || !ts.isNamedImports(imports)) continue;

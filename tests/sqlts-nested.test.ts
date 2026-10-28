@@ -24,7 +24,7 @@ const concise = explicit
   .replace("function explicit", "function concise")
   .replaceAll("sql.fragment`", "sql`");
 const source =
-  'import {sql} from "reylo-sqlts-experiment";\n// 🌍\n' +
+  'import {sql} from "@sqlts/core";\n// 🌍\n' +
   explicit +
   "\n" +
   concise +
@@ -85,7 +85,7 @@ test("nested sql tags match explicit fragment shapes and only outer queries rece
 });
 
 test("fragment inference recognizes helper arguments but not unrelated tags, callbacks or shadowed imports", () => {
-  const preamble = 'import {sql} from "reylo-sqlts-experiment";';
+  const preamble = 'import {sql} from "@sqlts/core";';
   expect(
     prepare(
       preamble + "const f = sql.where(sql`id = ${1}`, ok ? sql`name = ${name}` : sql.empty);",
@@ -122,7 +122,7 @@ test("nested shorthand has checked parameters/results, mapped SQL errors, and id
         noUncheckedIndexedAccess: true,
         types: ["node"],
       },
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       files: ["queries.sqlts", "consumer.ts"],
     }),
   );
@@ -173,8 +173,8 @@ try {
 `,
   );
   for (const command of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", runner],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", runner],
+    [process.execPath, "--preload", "@sqlts/core/register", runner],
   ]) {
     const result = await run(command);
     expect(result.code, result.output).toBe(0);

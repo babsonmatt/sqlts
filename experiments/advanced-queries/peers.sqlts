@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 // Correlated LEFT JOIN LATERAL: find the next user within the same organization.
 // Filtering INSIDE the lateral query changes which peer is chosen.

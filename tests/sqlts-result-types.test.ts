@@ -12,7 +12,7 @@ const dir = await mkdtemp(resolve("work/sqlts-result-types-"));
 afterAll(() => rm(dir, { recursive: true, force: true }));
 const file = resolve(dir, "queries.sqlts"),
   caller = resolve(dir, "caller.ts");
-const source = `import {sql} from "reylo-sqlts-experiment";
+const source = `import {sql} from "@sqlts/core";
 import {gate} from "./shared.sqlts";
 export function users(orgId:number, onlyWithEmail=false) {
   return sql\`SELECT email FROM reylo_inline_demo.users \${sql.where(sql\`org_id = \${orgId}\`, onlyWithEmail && sql\`email IS NOT NULL\`)} ORDER BY id\`;
@@ -144,13 +144,13 @@ const config = {
     noUncheckedIndexedAccess: true,
     types: ["node"],
   },
-  contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+  contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
   include: ["*.sqlts", "caller.ts"],
 };
 await writeFile(resolve(dir, "tsconfig.json"), JSON.stringify(config));
 await writeFile(
   resolve(dir, "shared.sqlts"),
-  'import {sql} from "reylo-sqlts-experiment"; export function gate(flag:boolean) {return sql.fragment`${flag ? sql.fragment`email IS NOT NULL` : sql.empty}`;}',
+  'import {sql} from "@sqlts/core"; export function gate(flag:boolean) {return sql.fragment`${flag ? sql.fragment`email IS NOT NULL` : sql.empty}`;}',
 );
 async function run(command: string[]) {
   const child = Bun.spawn(command, { cwd: root, stdout: "pipe", stderr: "pipe" });
@@ -284,8 +284,8 @@ try {
 } finally {await db.end();}`,
   );
   for (const command of [
-    [Bun.which("node")!, "--env-file=.env", "--import", "reylo-sqlts-experiment/register", script],
-    [process.execPath, "--preload", "reylo-sqlts-experiment/register", script],
+    [Bun.which("node")!, "--env-file=.env", "--import", "@sqlts/core/register", script],
+    [process.execPath, "--preload", "@sqlts/core/register", script],
   ]) {
     const result = await run(command);
     expect(result.code, result.output).toBe(0);

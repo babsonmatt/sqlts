@@ -1,4 +1,4 @@
-import { sql } from "reylo-sqlts-experiment";
+import { sql } from "@sqlts/core";
 
 // Materialized CTE, aggregate FILTER, optional HAVING, INNER JOIN, window function.
 // minMembers applies to the searched subset, not the whole organization.

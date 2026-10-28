@@ -14,7 +14,7 @@
   },
   "contentMappers": [
     {
-      "package": "reylo-sqlts-experiment",
+      "package": "@sqlts/core",
       "extensions": [
         ".sqlts"
       ]

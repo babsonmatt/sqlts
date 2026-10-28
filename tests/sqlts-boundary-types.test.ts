@@ -7,7 +7,7 @@ test("all 64 projection combinations narrow independently at the supported shape
   const dir = await mkdtemp(resolve("work/sqlts-boundary-")),
     file = resolve(dir, "queries.sqlts");
   const source = (count: number) =>
-    'import {sql} from "reylo-sqlts-experiment";export function project(' +
+    'import {sql} from "@sqlts/core";export function project(' +
     Array.from({ length: count }, (_, i) => `f${i}:boolean`).join(",") +
     "){return sql`SELECT " +
     Array.from(
@@ -53,7 +53,7 @@ test("all 64 projection combinations narrow independently at the supported shape
           allowImportingTsExtensions: true,
           types: ["node"],
         },
-        contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+        contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
         files: ["caller.ts"],
       }),
     );
@@ -89,10 +89,10 @@ test("all 64 projection combinations narrow independently at the supported shape
         Bun.which("node")!,
         "--env-file=.env",
         "--import",
-        "reylo-sqlts-experiment/register",
+        "@sqlts/core/register",
         runner,
       ],
-      [process.execPath, "--preload", "reylo-sqlts-experiment/register", runner],
+      [process.execPath, "--preload", "@sqlts/core/register", runner],
     ])
       expect(await run(args)).toContain("64 combinations verified");
     console.log(

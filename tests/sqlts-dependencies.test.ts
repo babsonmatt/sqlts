@@ -17,9 +17,9 @@ async function fixture() {
   await mkdir(dirname(config), { recursive: true });
   await mkdir(dirname(helper), { recursive: true });
   const leafText =
-      'import {sql} from "reylo-sqlts-experiment";export function columns(){return sql.fragment`id, email`;}',
+      'import {sql} from "@sqlts/core";export function columns(){return sql.fragment`id, email`;}',
     queryText =
-      'import {sql} from "reylo-sqlts-experiment";import {columns} from "../shared/outer.sqlts";export const users=()=>sql`SELECT ${columns()} FROM reylo_inline_demo.users`;',
+      'import {sql} from "@sqlts/core";import {columns} from "../shared/outer.sqlts";export const users=()=>sql`SELECT ${columns()} FROM reylo_inline_demo.users`;',
     callerText =
       'import {users} from "./query.sqlts";import type {PostgresClient} from "reylo";export async function demo(db:PostgresClient){const value=(await users().run(db))[0]?.email;return value;}';
   await writeFile(
@@ -42,7 +42,7 @@ async function fixture() {
     config,
     JSON.stringify({
       extends: "../base.json",
-      contentMappers: [{ package: "reylo-sqlts-experiment", extensions: [".sqlts"] }],
+      contentMappers: [{ package: "@sqlts/core", extensions: [".sqlts"] }],
       files: ["caller.ts"],
     }),
   );

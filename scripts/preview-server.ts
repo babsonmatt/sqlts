@@ -33,7 +33,7 @@ const colors = new SqlSemanticTokens();
 const sqltsColors = new SqltsSemanticTokens();
 const isSqlts = (uri: string) => uri.endsWith(".sqlts");
 const hasSql = (uri: string, text: string) =>
-  isSqlts(uri) ? text.includes("reylo-sqlts-experiment") : text.includes(".inline/sql");
+  isSqlts(uri) ? text.includes("@sqlts/core") : text.includes(".inline/sql");
 const catalog = new CatalogService(
   () =>
     send({

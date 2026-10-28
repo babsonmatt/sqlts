@@ -71,7 +71,7 @@ test("expanded SQL/source maps affect cache eviction and oversized mappings fail
   const dir = await mkdtemp(resolve("work/sqlts-map-budget-"));
   clearPreparationCache();
   const source = (padding: number) =>
-    'import {sql} from "reylo-sqlts-experiment";export function q(' +
+    'import {sql} from "@sqlts/core";export function q(' +
     Array.from({ length: 6 }, (_, i) => `f${i}:boolean`).join(",") +
     "){return sql`SELECT id FROM users /*" +
     "x".repeat(padding) +
@@ -98,18 +98,18 @@ test("recursive and excessively wide helper graphs fail explicitly", async () =>
   try {
     await writeFile(
       resolve(dir, "cycle.sqlts"),
-      'import {sql} from "reylo-sqlts-experiment";export function gate(a:boolean){return a?sql.fragment`TRUE`:gate(a);}',
+      'import {sql} from "@sqlts/core";export function gate(a:boolean){return a?sql.fragment`TRUE`:gate(a);}',
     );
     const source =
-      'import {sql} from "reylo-sqlts-experiment";import {gate} from "./cycle.sqlts";export const q=(a:boolean)=>sql`SELECT 1 ${sql.where(gate(a))}`;';
+      'import {sql} from "@sqlts/core";import {gate} from "./cycle.sqlts";export const q=(a:boolean)=>sql`SELECT 1 ${sql.where(gate(a))}`;';
     expect(() => prepare(source, resolve(dir, "query.sqlts"))).toThrow("Recursive fragment");
     for (let i = 0; i < 64; i++)
       await writeFile(
         resolve(dir, `leaf${i}.sqlts`),
-        'import {sql} from "reylo-sqlts-experiment";export const piece=sql.fragment`TRUE`;',
+        'import {sql} from "@sqlts/core";export const piece=sql.fragment`TRUE`;',
       );
     const wide =
-      'import {sql} from "reylo-sqlts-experiment";' +
+      'import {sql} from "@sqlts/core";' +
       Array.from({ length: 64 }, (_, i) => `import {piece as p${i}} from "./leaf${i}.sqlts";`).join(
         "\n",
       ) +
