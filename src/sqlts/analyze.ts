@@ -163,10 +163,10 @@ export async function analyze(
   const common = prepared.edits.filter(
     (e) => !(e.start >= start && e.end <= end) && !sites.some((s) => s.start === e.start),
   );
-  const dependencyChecks = Object.entries(prepared.fingerprints ?? {}).map(([file, stamp], i) => {
+  const dependencyChecks = Object.entries(prepared.fingerprints ?? {}).map(([file, stamp]) => {
     let path = relative(dirname(p.fileName), file).replaceAll("\\", "/");
     if (!path.startsWith(".")) path = "./" + path;
-    return `type ${prefix}Dependency${i} = ${prefix}Fresh<import(${JSON.stringify(path)}).__reyloSqltsSource extends ${JSON.stringify(stamp)} ? true : "Shared SQL fragment changed: save its source and recheck/restart the SQLTS language server">;`;
+    return `${prefix}Fresh<import(${JSON.stringify(path)}).__reyloSqltsSource extends ${JSON.stringify(stamp)} ? true : "Shared SQL fragment changed: save its source and recheck/restart the SQLTS language server">`;
   });
   const checking: Edit[] = [
     {
@@ -175,7 +175,8 @@ export async function analyze(
       text:
         fingerprint +
         (dependencyChecks.length
-          ? `type ${prefix}Fresh<T extends true> = T;\n` + dependencyChecks.join("\n")
+          ? // An ambient declaration keeps the checks without unused-type diagnostics.
+            `type ${prefix}Fresh<T extends true> = T;\ndeclare const ${prefix}dependencies: [${dependencyChecks.join(", ")}];`
           : ""),
     },
     ...common,
@@ -183,7 +184,7 @@ export async function analyze(
     {
       start,
       end,
-      text: `import type { Sql as ${prefix}Sql, QueryTag as ${prefix}Tag, Query as ${prefix}Query } from ${JSON.stringify(runtimePath)};\ndeclare const ${name}: ${prefix}Sql<Record<never,never>>;\n${specializations.length ? resultTypeHelpers(prefix) : ""}${declarations.join("\n")}\n`,
+      text: `import type { Sql as ${prefix}Sql, QueryTag as ${prefix}Tag, Query as ${prefix}Query } from ${JSON.stringify(runtimePath)};\ndeclare const ${name}: ${prefix}Sql<Record<never,never>>;\n${specializations.length ? resultTypeHelpers(prefix, [...specializations.map((s) => s.text), ...declarations].join("\n")) : ""}${declarations.join("\n")}\n`,
     },
     ...sites.map((s) => ({ start: s.start, end: s.end, text: s.tag })),
   ];

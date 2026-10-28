@@ -6,17 +6,35 @@ import type { Edit, prepare } from "./transform.ts";
 
 // These helpers describe possible outcomes, not a single assumed execution.
 // Intersection retains falsy possibilities for broad string/number parameters.
-export function resultTypeHelpers(prefix: string) {
-  return `type ${prefix}Falsy = false | "" | 0 | null | undefined;
-type ${prefix}Truth<T> = ([Exclude<T, ${prefix}Falsy>] extends [never] ? never : true) | ([T & ${prefix}Falsy] extends [never] ? never : false);
-type ${prefix}Eq<T, L> = ([T & L] extends [never] ? never : true) | ([Exclude<T, L>] extends [never] ? never : false);
-type ${prefix}Not<T> = (true extends T ? false : never) | (false extends T ? true : never);
-type ${prefix}And<A, B> = (false extends A ? false : never) | (true extends A ? B : never);
-type ${prefix}Or<A, B> = (true extends A ? true : never) | (false extends A ? B : never);
-type ${prefix}May<T, V, Row> = V extends T ? Row : never;
-type ${prefix}Default<T, D> = Exclude<T, undefined> | (undefined extends T ? D : never);
-type ${prefix}Coalesce<T, D> = Exclude<T, null | undefined> | ([T & (null | undefined)] extends [never] ? never : D);
-`;
+const helpers = (prefix: string) => [
+  `type ${prefix}Falsy = false | "" | 0 | null | undefined;`,
+  `type ${prefix}Truth<T> = ([Exclude<T, ${prefix}Falsy>] extends [never] ? never : true) | ([T & ${prefix}Falsy] extends [never] ? never : false);`,
+  `type ${prefix}Eq<T, L> = ([T & L] extends [never] ? never : true) | ([Exclude<T, L>] extends [never] ? never : false);`,
+  `type ${prefix}Not<T> = (true extends T ? false : never) | (false extends T ? true : never);`,
+  `type ${prefix}And<A, B> = (false extends A ? false : never) | (true extends A ? B : never);`,
+  `type ${prefix}Or<A, B> = (true extends A ? true : never) | (false extends A ? B : never);`,
+  `type ${prefix}May<T, V, Row> = V extends T ? Row : never;`,
+  `type ${prefix}Default<T, D> = Exclude<T, undefined> | (undefined extends T ? D : never);`,
+  `type ${prefix}Coalesce<T, D> = Exclude<T, null | undefined> | ([T & (null | undefined)] extends [never] ? never : D);`,
+];
+
+/** The helpers `uses` references, directly or through other helpers. Unused ones would be reported by noUnusedLocals. */
+export function resultTypeHelpers(prefix: string, uses: string) {
+  const pending = helpers(prefix).map((text) => ({
+    text,
+    name: new RegExp(`\\b${/^type (\w+)/.exec(text)![1]}\\b`),
+  }));
+  const included: string[] = [];
+  for (;;) {
+    const found = pending.filter((helper) => helper.name.test(uses));
+    if (!found.length) break;
+    for (const helper of found) {
+      pending.splice(pending.indexOf(helper), 1);
+      included.push(helper.text);
+      uses += "\n" + helper.text;
+    }
+  }
+  return included.map((text) => text + "\n").join("");
 }
 
 const unwrap = (e: ts.Expression): ts.Expression =>

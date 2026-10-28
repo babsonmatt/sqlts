@@ -19,10 +19,25 @@ extension; the settings below enable both.
   "file_types": { "TypeScript": ["sqlts"] },
   "languages": {
     "TypeScript": {
-      "language_servers": ["sqlts", "typescript-ls", "..."],
+      "language_servers": [
+        "sqlts",
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
       "semantic_tokens": "combined"
     },
-    "TSX": { "language_servers": ["sqlts", "typescript-ls", "..."], "semantic_tokens": "combined" }
+    "TSX": {
+      "language_servers": [
+        "sqlts",
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "semantic_tokens": "combined"
+    }
   },
   "lsp": {
     "typescript-ls": {
@@ -33,7 +48,11 @@ extension; the settings below enable both.
 }
 ```
 
-4. Restart the language servers (or reopen the project).
+4. Reopen the project so Zed applies the new language-server list.
+
+`!vtsls` and `!typescript-language-server` turn off Zed's default TypeScript servers.
+They cannot run the SQLTS content mapper, so they would report `Cannot find module
+'./queries.sqlts'` and treat `sql` as `never` next to the correct types.
 
 The `sqlts` server is opt-in, so it only runs in projects that list it.
 

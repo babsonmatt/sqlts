@@ -140,10 +140,25 @@ add to the project's `.zed/settings.json`, merging with existing settings:
   "file_types": { "TypeScript": ["sqlts"] },
   "languages": {
     "TypeScript": {
-      "language_servers": ["sqlts", "typescript-ls", "..."],
+      "language_servers": [
+        "sqlts",
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
       "semantic_tokens": "combined"
     },
-    "TSX": { "language_servers": ["sqlts", "typescript-ls", "..."], "semantic_tokens": "combined" }
+    "TSX": {
+      "language_servers": [
+        "sqlts",
+        "typescript-ls",
+        "!vtsls",
+        "!typescript-language-server",
+        "..."
+      ],
+      "semantic_tokens": "combined"
+    }
   },
   "lsp": {
     "typescript-ls": {
@@ -156,7 +171,10 @@ add to the project's `.zed/settings.json`, merging with existing settings:
 ```
 
 `"runtime": "bun"` runs the preview server on Bun. The `sqlts` entry is optional when using Node.
-Restart the language servers after changing these settings.
+`!vtsls` and `!typescript-language-server` turn off Zed's default TypeScript servers, which
+cannot run the content mapper and would report `Cannot find module './queries.sqlts'`.
+Reopen the project after changing the language-server list; restarting the servers alone
+can keep the old list.
 
 ### Other editors
 

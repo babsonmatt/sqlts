@@ -2,6 +2,7 @@ use zed_extension_api::{self as zed, settings::LspSettings, Command, LanguageSer
 
 const PACKAGE_LAUNCHER: &str = "node_modules/@sqlts/core/src/sqlts/preview-cli.js";
 const CHECKOUT_SERVER: &str = "scripts/preview-server.ts";
+const CHECKOUT_MARKER: &str = "editors/zed/extension.toml";
 
 struct Sqlts;
 impl zed::Extension for Sqlts {
@@ -9,8 +10,24 @@ impl zed::Extension for Sqlts {
     fn language_server_command(&mut self, id: &LanguageServerId, worktree: &Worktree) -> Result<Command> {
         let root = worktree.root_path();
         let env = worktree.shell_env();
-        // Prefer the project's installed package. The SQLTS source checkout is a dev fallback.
-        if worktree.read_text_file(PACKAGE_LAUNCHER).is_ok() {
+        // The SQLTS source checkout runs its TypeScript server with Bun.
+        if worktree.read_text_file(CHECKOUT_MARKER).is_ok() {
+            let bun = worktree.which("bun").ok_or("The SQLTS source checkout needs Bun on PATH")?;
+            return Ok(Command {
+                command: bun,
+                args: vec![
+                    "--no-env-file".into(),
+                    format!("--config={root}/editors/zed/server.bunfig.toml"),
+                    format!("{root}/{CHECKOUT_SERVER}"),
+                    "--project".into(), root,
+                ],
+                env,
+            });
+        }
+        // Zed cannot read ignored files such as node_modules, so detect the package from package.json.
+        let uses_sqlts = worktree.read_text_file("package.json")
+            .is_ok_and(|text| text.contains("\"@sqlts/core\""));
+        if uses_sqlts {
             // `"lsp": { "sqlts": { "settings": { "runtime": "bun" } } }` runs the server on Bun.
             let runtime = LspSettings::for_worktree(id.as_ref(), worktree).ok()
                 .and_then(|s| s.settings)
@@ -25,19 +42,6 @@ impl zed::Extension for Sqlts {
                 args: vec![
                     format!("{root}/{PACKAGE_LAUNCHER}"),
                     "--runtime".into(), runtime,
-                    "--project".into(), root,
-                ],
-                env,
-            });
-        }
-        if worktree.read_text_file(CHECKOUT_SERVER).is_ok() {
-            let bun = worktree.which("bun").ok_or("The SQLTS source checkout needs Bun on PATH")?;
-            return Ok(Command {
-                command: bun,
-                args: vec![
-                    "--no-env-file".into(),
-                    format!("--config={root}/editors/zed/server.bunfig.toml"),
-                    format!("{root}/{CHECKOUT_SERVER}"),
                     "--project".into(), root,
                 ],
                 env,
