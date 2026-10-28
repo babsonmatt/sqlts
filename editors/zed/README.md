@@ -12,6 +12,7 @@ extension; the settings below enable both.
 2. Install this extension. Until it is in Zed's extension registry, clone
    [babsonmatt/sqlts](https://github.com/babsonmatt/sqlts), run
    `zed: install dev extension` and select `editors/zed` (Zed builds it; Rust must be installed).
+   [PUBLISHING.md](PUBLISHING.md) covers local installs, updates and registry publishing.
 3. Add to the project's `.zed/settings.json`, merging with existing settings:
 
 ```json
