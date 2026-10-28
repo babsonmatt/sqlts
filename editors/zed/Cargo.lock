@@ -497,7 +497,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "sqlts-zed"
+name = "sqlts-lsp"
 version = "0.1.0"
 dependencies = [
  "zed_extension_api",

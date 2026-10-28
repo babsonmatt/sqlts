@@ -1,8 +1,8 @@
-id = "sqlts"
+id = "sqlts-lsp"
 name = "SQLTS"
 version = "0.1.0"
 schema_version = 1
-authors = ["SQLTS contributors"]
+authors = ["SQLTS <hello@sqlts.dev>"]
 description = "SQL coloring, table and column completion, and query previews for SQLTS (@sqlts/core)."
 repository = "https://github.com/babsonmatt/sqlts"
 
