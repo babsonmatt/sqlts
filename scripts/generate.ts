@@ -78,7 +78,10 @@ export async function generate(files: string[], destination = ".inline/sql.ts") 
           `readonly [${expected.map((p) => `${paramsName}[${JSON.stringify(p)}]`).join(", ")}]`,
         );
         rows.push(rowName);
-        artifact[q.id]![named] = result.info;
+        // Keep machine-specific absolute paths out of the committed artifact.
+        const source =
+          result.info.source && relative(".", result.info.source).replaceAll("\\", "/");
+        artifact[q.id]![named] = { ...result.info, source };
         count++;
       }
       registry.push(

@@ -700,7 +700,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-0.sql",
+        source: ".inline/shape-0.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -801,7 +801,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-1.sql",
+        source: ".inline/shape-1.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -882,7 +882,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-2.sql",
+        source: ".inline/shape-2.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -963,7 +963,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-3.sql",
+        source: ".inline/shape-3.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1022,7 +1022,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-4.sql",
+        source: ".inline/shape-4.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1077,7 +1077,7 @@ const artifact = {
         ["name", "text"],
         ["email", "text"],
       ],
-      source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-5.sql",
+      source: ".inline/shape-5.sql",
       fresh: {
         query:
           'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1149,7 +1149,7 @@ const artifact = {
           ["name", "text"],
           ["position", "int8"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-6.sql",
+        source: ".inline/shape-6.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1230,7 +1230,7 @@ const artifact = {
           ["name", "text"],
           ["position", "int8"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-7.sql",
+        source: ".inline/shape-7.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1311,7 +1311,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-8.sql",
+        source: ".inline/shape-8.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1391,7 +1391,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-9.sql",
+        source: ".inline/shape-9.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1461,7 +1461,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-10.sql",
+        source: ".inline/shape-10.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1531,7 +1531,7 @@ const artifact = {
           ["name", "text"],
           ["email", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-11.sql",
+        source: ".inline/shape-11.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1599,7 +1599,7 @@ const artifact = {
           ["id", "int"],
           ["display_name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-12.sql",
+        source: ".inline/shape-12.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1666,7 +1666,7 @@ const artifact = {
           ["id", "int"],
           ["display_name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-13.sql",
+        source: ".inline/shape-13.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1738,7 +1738,7 @@ const artifact = {
           ["lower_name", "text"],
           ["name_length", "int"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-14.sql",
+        source: ".inline/shape-14.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1807,7 +1807,7 @@ const artifact = {
           ["key", "text"],
           ["value", "json"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-15.sql",
+        source: ".inline/shape-15.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1895,7 +1895,7 @@ const artifact = {
           ["id", "int"],
           ["name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-16.sql",
+        source: ".inline/shape-16.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -1983,7 +1983,7 @@ const artifact = {
           ["id", "int"],
           ["name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-17.sql",
+        source: ".inline/shape-17.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -2061,7 +2061,7 @@ const artifact = {
           ["id", "int"],
           ["name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-18.sql",
+        source: ".inline/shape-18.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -2149,7 +2149,7 @@ const artifact = {
           ["id", "int"],
           ["name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-19.sql",
+        source: ".inline/shape-19.sql",
         fresh: {
           query:
             'SELECT r.name AS fresh_table, a.attname::pg_catalog.text AS fresh_column, pg_catalog.format_type(a.atttypid, a.atttypmod) AS fresh_type, (a.attnotnull OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typnotnull))::pg_catalog.text AS fresh_not_null, (a.atthasdef OR a.attidentity OPERATOR(pg_catalog.<>) \'\'::pg_catalog."char" OR (t.typtype OPERATOR(pg_catalog.=) \'d\'::pg_catalog."char" AND t.typdefault IS NOT NULL))::pg_catalog.text AS fresh_default FROM (VALUES (\'"reylo_inline_demo"."users"\'::pg_catalog.text)) AS r(name) JOIN pg_catalog.pg_attribute a ON a.attrelid OPERATOR(pg_catalog.=) pg_catalog.to_regclass(r.name)::pg_catalog.oid AND a.attnum OPERATOR(pg_catalog.>) 0 AND NOT a.attisdropped JOIN pg_catalog.pg_type t ON t.oid OPERATOR(pg_catalog.=) a.atttypid ORDER BY 1, 2',
@@ -2222,7 +2222,7 @@ const artifact = {
         },
       },
       columns: [["n", "int"]],
-      source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-20.sql",
+      source: ".inline/shape-20.sql",
     },
   },
   completionRecord: {
@@ -2274,7 +2274,7 @@ const artifact = {
           ["id", "int"],
           ["display_name", "text"],
         ],
-        source: "/Users/matt/src/sandbox/reylo-inline-sql/.inline/shape-21.sql",
+        source: ".inline/shape-21.sql",
       },
   },
 } as Artifact;

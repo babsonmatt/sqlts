@@ -17,7 +17,7 @@
   "lsp": {
     "typescript-ls": {
       "binary": {
-        "path": "/Users/matt/src/sandbox/reylo-inline-sql/node_modules/typescript/bin/tsc",
+        "path": "../../node_modules/typescript/bin/tsc",
         "arguments": ["--lsp", "--stdio"]
       },
       "initialization_options": {
@@ -29,10 +29,10 @@
         "path": "bun",
         "arguments": [
           "--no-env-file",
-          "--config=/Users/matt/src/sandbox/reylo-inline-sql/editors/zed/server.bunfig.toml",
-          "/Users/matt/src/sandbox/reylo-inline-sql/scripts/preview-server.ts",
+          "--config=../../editors/zed/server.bunfig.toml",
+          "../../scripts/preview-server.ts",
           "--project",
-          "/Users/matt/src/sandbox/reylo-inline-sql"
+          "../.."
         ]
       }
     }

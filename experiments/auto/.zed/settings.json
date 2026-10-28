@@ -17,10 +17,10 @@
         "path": "bun",
         "arguments": [
           "--no-env-file",
-          "--config=/Users/matt/src/sandbox/reylo-inline-sql/editors/zed/server.bunfig.toml",
-          "/Users/matt/src/sandbox/reylo-inline-sql/scripts/auto-server.ts",
+          "--config=../../editors/zed/server.bunfig.toml",
+          "../../scripts/auto-server.ts",
           "--project",
-          "/Users/matt/src/sandbox/reylo-inline-sql/experiments/auto"
+          "."
         ]
       }
     }
