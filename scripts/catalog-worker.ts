@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import pg from "pg";
+import postgres from "postgres";
 import type { Catalog, Relation, SqlFunction, SqlType } from "../src/catalog.ts";
 
 // Runs on Node or Bun. The launcher loads .env and .env.local; .reylo.yaml's direct_url wins.
@@ -18,9 +18,9 @@ for (const file of [".reylo.yaml", ".reylo.yml"]) {
 }
 if (!url || !/^postgres(?:ql)?:/.test(url))
   throw new Error("A PostgreSQL development database is required");
-const db = new pg.Client({ connectionString: url, connectionTimeoutMillis: 5000 });
-await db.connect();
-const query = async <T>(text: string) => (await db.query(text)).rows as T[];
+// Notices would otherwise go to stdout, which carries the catalog.
+const db = postgres(url, { max: 1, connect_timeout: 5, onnotice: () => {} });
+const query = async <T>(text: string) => [...(await db.unsafe(text))] as T[];
 try {
   // Read catalog metadata only: no user query or application code is executed.
   const rows = await query<{

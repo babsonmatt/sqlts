@@ -83,7 +83,7 @@ await writeFile(
   JSON.stringify(
     {
       name: "@sqlts/core",
-      version: "0.1.3",
+      version: "0.1.4",
       description:
         "Write PostgreSQL in TypeScript and keep inferred types, with SQL-aware checking.",
       keywords: ["sql", "postgres", "postgresql", "typescript", "types", "query", "reylo"],
@@ -118,7 +118,7 @@ await writeFile(
       },
       dependencies: {
         "typescript-ast": "npm:typescript@5.9.3",
-        pg: "8.23.1",
+        postgres: "3.4.9",
       },
       peerDependencies: {
         reylo: "~0.6.0",
