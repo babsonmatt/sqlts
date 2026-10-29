@@ -41,9 +41,8 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
         reylo: "0.6.0",
         "@reylosql/postgres": "0.6.0",
         typescript: "7.1.0-beta",
-        pg: "8.23.1",
+        postgres: "3.4.9",
         "@types/node": "26.6.5",
-        "@types/pg": "8.23.1",
         esbuild: "0.28.2",
       },
     }),
@@ -287,7 +286,7 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
       type: "module",
       dependencies: {
         reylo: "0.6.0",
-        pg: "8.23.1",
+        postgres: "3.4.9",
       },
     }),
   );
@@ -310,9 +309,9 @@ test("the packed tarball checks and runs outside the checkout, and builds an ana
     await writeFile(resolve(production, "deployment.mjs"), bundle);
     await writeFile(
       resolve(production, "run.mjs"),
-      `import {createRequire} from 'node:module';import {strict as assert} from 'node:assert';import {Pool} from 'pg';import {consume} from './deployment.mjs';
-  const require=createRequire(import.meta.url);assert.throws(()=>require.resolve('typescript-ast'));assert.throws(()=>require.resolve('@sqlts/core'));
-  const db=new Pool({connectionString:process.env.DATABASE_URL});try{assert.equal(await consume(db),'Alice');}finally{await db.end();}`,
+      `import {createRequire} from 'node:module';import {strict as assert} from 'node:assert';import postgres from 'postgres';import {consume} from './deployment.mjs';
+  const require=createRequire(import.meta.url);assert.throws(()=>require.resolve('typescript-ast'));assert.throws(()=>require.resolve('@sqlts/core'));assert.throws(()=>require.resolve('pg'));
+  const db=postgres(process.env.DATABASE_URL);try{assert.equal(await consume(db),'Alice');}finally{await db.end();}`,
     );
     const executedProduction = await run([Bun.which("node")!, "run.mjs"], production);
     expect(executedProduction.code, executedProduction.output).toBe(0);

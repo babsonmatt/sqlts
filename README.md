@@ -384,7 +384,8 @@ Without `RETURNING`, `rows` is `never[]`; `.run(db)` still returns that empty
 array, and `.execute(db)` still follows inferred cardinality. Counts describe
 the top-level command, not writes inside CTEs/triggers. SELECT reports zero
 writes. PostgreSQL UPDATE counts matched rows even if values are unchanged.
-Use the driver's transaction client when multiple statements must be atomic.
+Use the driver's transaction client when multiple statements must be atomic
+(postgres.js: the `tx` from `sql.begin`; `pg`: a client from `pool.connect()`).
 
 Verified on pg/postgres.js under Node and Bun, Bun.SQL, and browser PGlite.
 PGlite 0.4.6 supplies `affectedRows` without `command`. Clients that discard

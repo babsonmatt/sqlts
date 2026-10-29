@@ -8,13 +8,27 @@ to execute TypeScript from inside `node_modules`.
 ## Another project
 
 Install `@sqlts/core` with the project's package manager, together with `reylo@0.6` and
-`@reylosql/postgres@0.6`, `typescript@7.1.0-beta`, the application's driver (`pg` in our tests), and
-its normal Node/driver type packages:
+`@reylosql/postgres@0.6`, `typescript@7.1.0-beta`, a PostgreSQL driver and Node's types. The examples
+use [postgres.js](https://github.com/porsager/postgres) (`postgres`), which ships its own types:
 
 ```sh
-npm install @sqlts/core reylo@0.6 @reylosql/postgres@0.6 pg
-npm install -D typescript@7.1.0-beta @types/node @types/pg
+npm install @sqlts/core reylo@0.6 @reylosql/postgres@0.6 postgres
+npm install -D typescript@7.1.0-beta @types/node
 ```
+
+```ts
+import postgres from "postgres";
+import { userIds } from "./queries.sqlts";
+
+const db = postgres(process.env.DATABASE_URL!);
+console.log(await userIds(10).run(db));
+await db.end();
+```
+
+Any driver Reylo supports works the same way: `pg` (with `@types/pg`), `Bun.sql`, PGlite,
+Neon, `pg-promise`, `slonik`, or Drizzle over one of them. Pass the client, pool, reserved
+connection or transaction to `.run(db)`. With postgres.js, run a transaction's queries on the
+`tx` that `sql.begin` gives you.
 
 To try a local build instead, install the tarball printed by `bun run sqlts:pack` in place of
 `@sqlts/core`.
@@ -118,7 +132,7 @@ stacks do not yet map back through the SQLTS transform. Cloudflare and other edg
 adapters remain unverified; this is not a promise of support for every runtime.
 
 The package regression test installs the tarball outside the checkout, checks and runs it
-on Node/Bun, then copies its bundle into a second project with only Reylo and pg. That second
+on Node/Bun, then copies its bundle into a second project with only Reylo and postgres.js. That second
 project executes a real query without the SQLTS package or TypeScript AST library installed.
 Bundle startup/compile is also checked with an unreachable development DATABASE_URL.
 

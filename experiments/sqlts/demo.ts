@@ -1,6 +1,6 @@
-import { Pool } from "pg";
+import postgres from "postgres";
 import { userIds, userNames, searchUsers, searchUsersShorthand } from "./queries.sqlts";
-const db = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = postgres(process.env.DATABASE_URL!);
 try {
   console.log("IDs:", await userIds(10).run(db));
   console.log("Names:", await userNames(10).run(db));

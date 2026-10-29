@@ -95,7 +95,7 @@ bun --preload @sqlts/core/register experiments/sqlts/demo.ts
 
 The root scripts `sqlts:check`, `sqlts:demo`, and `sqlts:demo:bun` are shortcuts for
 exactly those commands. No precheck, generator or build wrapper runs before the demo.
-The read-only demo uses `pg` on both runtimes, rather than depending on `Bun.SQL`.
+The read-only demo uses postgres.js on both runtimes, rather than depending on `Bun.SQL`.
 Verified on Node 25.2.1, Bun 1.4.4-canary and TypeScript 7.1.0-beta.
 
 The **Bun runtime works; Bun's built-in checker cannot check content mappers** on
@@ -118,7 +118,7 @@ It does not switch to Bun's built-in checker or change the runtime.
    to the authored file. Cross-file callers use the inferred exports normally.
 4. At runtime the loader analyzes the imported module, creates query metadata and
    transpiles its TypeScript in memory. Node uses a worker for analysis; Bun uses
-   its asynchronous loader. The runtime module then executes normally with `pg`.
+   its asynchronous loader. The runtime module then executes normally with the application's driver.
 
 There are no emitted `.ts`, `.js`, `.d.ts`, `.inline`, `.auto`, or `dist` artifacts
 for the experiment. Reylo's normal disposable `.reylo` analysis cache is allowed.

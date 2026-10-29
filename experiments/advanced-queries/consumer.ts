@@ -22,8 +22,8 @@ export async function explore(db: PostgresClient, orgId: number) {
 
 // bun --preload @sqlts/core/register experiments/advanced-queries/consumer.ts
 if (import.meta.main) {
-  const { Pool } = await import("pg");
-  const db = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { default: postgres } = await import("postgres");
+  const db = postgres(process.env.DATABASE_URL!);
   try {
     const result = await explore(db, 10);
     console.log("CTEs + aggregate FILTER + window rank:");

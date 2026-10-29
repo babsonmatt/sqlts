@@ -26,8 +26,8 @@ export async function deleteExample(transaction: PostgresClient, id: number, org
 }
 
 if (import.meta.main) {
-  const { Pool } = await import("pg");
-  const db = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { default: postgres } = await import("postgres");
+  const db = postgres(process.env.DATABASE_URL!);
   try {
     console.table((await inspectUsers(db, 10)).users);
     console.log("Search SQL:", searchUsers(10, "Alice").compile());

@@ -17,8 +17,8 @@ export async function inspectNarrowing(db: PostgresClient, orgId: number, flag: 
 }
 
 if (import.meta.main) {
-  const { Pool } = await import("pg");
-  const db = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { default: postgres } = await import("postgres");
+  const db = postgres(process.env.DATABASE_URL!);
   try {
     const result = await inspectNarrowing(db, 10, true);
     console.log("Email required:");

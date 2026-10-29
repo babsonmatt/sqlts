@@ -28,8 +28,8 @@ export async function consumeUsers(db: PostgresClient, orgId: number) {
 // Run from the repository root:
 // bun --preload @sqlts/core/register experiments/user-search/consumer.ts
 if (import.meta.main) {
-  const { Pool } = await import("pg");
-  const db = new Pool({ connectionString: process.env.DATABASE_URL });
+  const { default: postgres } = await import("postgres");
+  const db = postgres(process.env.DATABASE_URL!);
   try {
     console.log(await consumeUsers(db, 10));
   } finally {
